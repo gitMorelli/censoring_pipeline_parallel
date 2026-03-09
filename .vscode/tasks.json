@@ -1,0 +1,203 @@
+//old path: Z:
+//new path: \\vms-e34n-databr\\2025-handwriting
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: censor (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: png_from_pdf_q5_test (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting:/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: convert_additional_templates (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting:/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: generate_annotations (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: tests (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: id_identification (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: pipeline_censor_knowing_id_and_template (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    // ---------------------------------------------------  TESTS -------------------------------------------------------------------
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: read_samples_from_shared_folder (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting:/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: tesseract_tests (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting:/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: move_annotated_to_test_folder (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting:/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: group_files_by_id (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting:/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: check_ref_Qx_files (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting:/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      //"label": "Python DEbugger: Censor on gustaveroussy",
+      "label": "Python Debugger: check_id_association_w_table (LocalEnv)",
+      "type": "process",
+      "command": "//vms-e34n-databr//2025-handwriting:/programs/miniconda3/envs/LocalEnv/python.exe",
+      "args": ["${file}"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

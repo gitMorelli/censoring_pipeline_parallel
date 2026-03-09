@@ -1,0 +1,20 @@
+//path: \\vms-e34n-databr\\2025-handwriting/programs/miniconda3/ 
+{
+    "python.defaultInterpreterPath": "//vms-e34n-databr//2025-handwriting/programs/miniconda3/envs/LocalEnv/python.exe",
+    "python.pythonPath": "//vms-e34n-databr//2025-handwriting/programs/miniconda3/envs/LocalEnv/python.exe",
+    "python.condaPath": "//vms-e34n-databr//2025-handwriting/programs/miniconda3/condabin/conda.bat",
+    // IMPORTANT: stop using Jedi, switch to Pylance
+    "python.languageServer": "Pylance",
+    "python.terminal.activateEnvironment": true,
+    "terminal.integrated.defaultProfile.windows": "Conda (LocalEnv)",
+    "terminal.integrated.profiles.windows": {
+      "Conda (LocalEnv)": {
+        "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "args": [
+          "-NoExit",
+          "-Command",
+          "& '\\\\vms-e34n-databr\\\\2025-handwriting\\\\programs\\\\miniconda3\\\\shell\\\\condabin\\\\conda-hook.ps1'; conda activate LocalEnv"
+        ]
+      }
+    }
+  }

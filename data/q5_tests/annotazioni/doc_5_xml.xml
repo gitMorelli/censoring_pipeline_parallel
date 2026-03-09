@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <id>3309893</id>
+      <size>4</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2025-11-26 13:10:23.295623+00:00</created>
+      <updated>2025-11-26 13:31:08.568216+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>3</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>3311254</id>
+          <start>0</start>
+          <stop>3</stop>
+          <url>https://app.cvat.ai/api/jobs/3309893</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>andrea77</username>
+        <email>andrea.morels14@gmail.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>roi</name>
+          <color>#a9bb5a</color>
+          <type>rectangle</type>
+          <attributes>
+            <attribute>
+              <name>blank</name>
+              <mutable>False</mutable>
+              <input_type>checkbox</input_type>
+              <default_value>false</default_value>
+              <values>false</values>
+            </attribute>
+          </attributes>
+        </label>
+        <label>
+          <name>align</name>
+          <color>#3df53d</color>
+          <type>rectangle</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>censor</name>
+          <color>#fa3253</color>
+          <type>rectangle</type>
+          <attributes>
+            <attribute>
+              <name>sure</name>
+              <mutable>False</mutable>
+              <input_type>checkbox</input_type>
+              <default_value>true</default_value>
+              <values>true</values>
+            </attribute>
+            <attribute>
+              <name>partial</name>
+              <mutable>False</mutable>
+              <input_type>checkbox</input_type>
+              <default_value>false</default_value>
+              <values>false</values>
+            </attribute>
+          </attributes>
+        </label>
+      </labels>
+    </job>
+    <dumped>2025-11-26 13:37:06.436188+00:00</dumped>
+  </meta>
+  <image id="0" name="page_1.png" width="1648" height="2368">
+    <box label="align" source="manual" occluded="0" xtl="1442.79" ytl="2272.07" xbr="1522.96" ybr="2345.27" z_order="0">
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="44.98" ytl="330.47" xbr="139.10" ybr="400.18" z_order="0">
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="34.52" ytl="543.10" xbr="156.52" ybr="623.28" z_order="0">
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="1299.87" ytl="1808.45" xbr="1522.96" ybr="1881.65" z_order="0">
+    </box>
+    <box label="censor" source="manual" occluded="0" xtl="710.77" ytl="731.34" xbr="975.69" ybr="835.91" z_order="0">
+      <attribute name="sure">true</attribute>
+      <attribute name="partial">false</attribute>
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="1149.98" ytl="759.22" xbr="1324.27" ybr="923.06" z_order="0">
+      <attribute name="blank">true</attribute>
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="34.52" ytl="163.15" xbr="187.90" ybr="295.61" z_order="0">
+      <attribute name="blank">false</attribute>
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="41.49" ytl="1543.53" xbr="299.44" ybr="1599.30" z_order="0">
+      <attribute name="blank">false</attribute>
+    </box>
+  </image>
+  <image id="1" name="page_2.png" width="1648" height="2368">
+    <box label="censor" source="manual" occluded="0" xtl="609.68" ytl="1853.77" xbr="1090.72" ybr="1920.00" z_order="0">
+      <attribute name="sure">true</attribute>
+      <attribute name="partial">false</attribute>
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="1484.62" ytl="2265.09" xbr="1571.77" ybr="2341.78" z_order="0">
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="76.35" ytl="724.36" xbr="327.33" ybr="783.62" z_order="0">
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="166.98" ytl="595.39" xbr="355.22" ybr="665.10" z_order="0">
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="972.21" ytl="989.29" xbr="1149.98" ybr="1271.64" z_order="0">
+      <attribute name="blank">true</attribute>
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="240.18" ytl="1540.04" xbr="428.42" ybr="1738.74" z_order="0">
+      <attribute name="blank">false</attribute>
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="76.35" ytl="232.86" xbr="557.39" ybr="278.18" z_order="0">
+      <attribute name="blank">false</attribute>
+    </box>
+  </image>
+  <image id="2" name="page_3.png" width="1648" height="2368">
+    <box label="censor" source="manual" occluded="0" xtl="873.69" ytl="1376.81" xbr="1596.74" ybr="1952.24" z_order="0">
+      <attribute name="sure">true</attribute>
+      <attribute name="partial">true</attribute>
+    </box>
+    <box label="censor" source="manual" occluded="0" xtl="873.69" ytl="2006.47" xbr="1602.77" ybr="2148.07" z_order="0">
+      <attribute name="sure">true</attribute>
+      <attribute name="partial">false</attribute>
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="1440.08" ytl="2283.64" xbr="1530.46" ybr="2349.92" z_order="0">
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="201.85" ytl="60.25" xbr="331.40" ybr="138.58" z_order="0">
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="33.14" ytl="864.65" xbr="277.17" ybr="921.89" z_order="0">
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="42.18" ytl="403.70" xbr="102.43" ybr="825.48" z_order="0">
+      <attribute name="blank">true</attribute>
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="1289.44" ytl="63.27" xbr="1382.84" ybr="135.57" z_order="0">
+      <attribute name="blank">false</attribute>
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="852.60" ytl="994.20" xbr="1090.60" ybr="1054.45" z_order="0">
+      <attribute name="blank">false</attribute>
+    </box>
+  </image>
+  <image id="3" name="page_4.png" width="1648" height="2368">
+  </image>
+</annotations>

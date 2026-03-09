@@ -1,0 +1,316 @@
+[
+{
+  "image": "\/data\/upload\/3\/804d7be2-page_4.png",
+  "id": 5,
+  "label": [
+    {
+      "x": 2.3113563601343086,
+      "y": 0.5361930294906166,
+      "width": 5.778390900335772,
+      "height": 3.485254691689008,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 90.33551107524923,
+      "y": 94.90616621983914,
+      "width": 4.8153257502798255,
+      "height": 4.289544235924936,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 50.4646138629324,
+      "y": 1.3404825737265416,
+      "width": 12.13462089070513,
+      "height": 3.753351206434316,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 3.328399466759898,
+      "y": 44.0579660518508,
+      "width": 1.5918432232329942,
+      "height": 20.84747503842179,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    }
+  ],
+  "roi_type": [
+    "align",
+    "align",
+    "standard",
+    "blank"
+  ],
+  "annotator": 1,
+  "annotation_id": 6,
+  "created_at": "2026-01-11T16:54:56.145896Z",
+  "updated_at": "2026-01-11T16:54:56.145896Z",
+  "lead_time": 86.005
+},
+{
+  "image": "\/data\/upload\/3\/7ae2d685-page_1.png",
+  "id": 6,
+  "label": [
+    {
+      "x": 0,
+      "y": 6.495247379965882,
+      "width": 19.786611264786128,
+      "height": 10.480136485498416,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 68.46517703125112,
+      "y": 52.31537899098221,
+      "width": 23.463769110454336,
+      "height": 5.605654399220079,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 87.20117176870346,
+      "y": 95.49110407019255,
+      "width": 5.778390900335765,
+      "height": 4.0214477211796265,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 1.926130300111924,
+      "y": 1.7060687301974167,
+      "width": 2.4514385637788125,
+      "height": 2.3153789909822082,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 43.60058588435173,
+      "y": 31.684133560809162,
+      "width": 18.385789228341096,
+      "height": 3.7777236168657105,
+      "rotation": 0,
+      "rectanglelabels": [
+        "censor"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    }
+  ],
+  "roi_type": [
+    "align",
+    "blank",
+    "align",
+    "standard"
+  ],
+  "censor_type": "standard",
+  "annotator": 1,
+  "annotation_id": 3,
+  "created_at": "2026-01-11T16:48:49.750676Z",
+  "updated_at": "2026-01-11T16:48:49.750676Z",
+  "lead_time": 167.643
+},
+{
+  "image": "\/data\/upload\/3\/bc554203-page_2.png",
+  "id": 7,
+  "label": [
+    {
+      "x": 2.889195450167886,
+      "y": 0.8042895442359249,
+      "width": 3.2744215101902707,
+      "height": 2.680965147453083,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 89.56505895520446,
+      "y": 96.38069705093834,
+      "width": 5.393164840313389,
+      "height": 2.2788203753351155,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 36.78908873213775,
+      "y": 78.55227882037534,
+      "width": 58.554361123402494,
+      "height": 3.0831099195710436,
+      "rotation": 0,
+      "rectanglelabels": [
+        "censor"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 5.200551810302194,
+      "y": 43.16353887399464,
+      "width": 9.63065150055962,
+      "height": 12.332439678284182,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 3.2744215101902707,
+      "y": 76.13941018766755,
+      "width": 24.269241781410244,
+      "height": 2.144772117962475,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    }
+  ],
+  "roi_type": [
+    "align",
+    "align",
+    "blank",
+    "standard"
+  ],
+  "censor_type": "standard",
+  "annotator": 1,
+  "annotation_id": 4,
+  "created_at": "2026-01-11T16:51:24.263007Z",
+  "updated_at": "2026-01-11T16:51:24.263007Z",
+  "lead_time": 100.3
+},
+{
+  "image": "\/data\/upload\/3\/01cadf3f-page_3.png",
+  "id": 8,
+  "label": [
+    {
+      "x": 0.1926130300111924,
+      "y": 1.0723860589812333,
+      "width": 5.007938780291002,
+      "height": 3.6193029490616624,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 86.09802441500301,
+      "y": 96.38069705093834,
+      "width": 6.548843020380531,
+      "height": 3.0831099195710436,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 11.942007860693929,
+      "y": 2.949061662198391,
+      "width": 19.06868997110805,
+      "height": 2.6809651474530836,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 46.03451417267498,
+      "y": 41.55495978552279,
+      "width": 5.778390900335772,
+      "height": 11.52815013404826,
+      "rotation": 0,
+      "rectanglelabels": [
+        "roi"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 52.9685832530779,
+      "y": 63.40482573726541,
+      "width": 42.952705692495904,
+      "height": 18.90080428954424,
+      "rotation": 0,
+      "rectanglelabels": [
+        "censor"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    },
+    {
+      "x": 52.775970223066714,
+      "y": 86.59517426273459,
+      "width": 44.10838387256306,
+      "height": 3.4852546916890077,
+      "rotation": 0,
+      "rectanglelabels": [
+        "censor"
+      ],
+      "original_width": 1648,
+      "original_height": 2368
+    }
+  ],
+  "roi_type": [
+    "align",
+    "align",
+    "standard",
+    "blank"
+  ],
+  "censor_type": [
+    "partial",
+    "standard"
+  ],
+  "annotator": 1,
+  "annotation_id": 5,
+  "created_at": "2026-01-11T16:53:17.069371Z",
+  "updated_at": "2026-01-11T16:53:17.069371Z",
+  "lead_time": 102.21
+}
+]

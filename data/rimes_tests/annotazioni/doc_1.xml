@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <id>3292642</id>
+      <size>2</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2025-11-20 16:38:35.736826+00:00</created>
+      <updated>2025-11-20 17:12:12.573396+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>1</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>3294003</id>
+          <start>0</start>
+          <stop>1</stop>
+          <url>https://app.cvat.ai/api/jobs/3292642</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>andrea77</username>
+        <email>andrea.morels14@gmail.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>censor</name>
+          <color>#050114</color>
+          <type>rectangle</type>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>roi</name>
+          <color>#3df53d</color>
+          <type>rectangle</type>
+          <attributes>
+            <attribute>
+              <name>blank</name>
+              <mutable>False</mutable>
+              <input_type>checkbox</input_type>
+              <default_value>false</default_value>
+              <values>false</values>
+            </attribute>
+          </attributes>
+        </label>
+        <label>
+          <name>align</name>
+          <color>#fa3253</color>
+          <type>rectangle</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </job>
+    <dumped>2025-11-20 17:12:41.234068+00:00</dumped>
+  </meta>
+  <image id="0" name="00002_Q_page_1.png" width="2477" height="3504">
+    <box label="censor" source="manual" occluded="0" xtl="280.80" ytl="511.70" xbr="2209.40" ybr="842.20" z_order="0">
+    </box>
+    <box label="censor" source="manual" occluded="0" xtl="959.86" ytl="2843.15" xbr="2209.35" ybr="3223.43" z_order="0">
+    </box>
+    <box label="censor" source="manual" occluded="0" xtl="276.30" ytl="1208.85" xbr="2218.40" ybr="1389.94" z_order="0">
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="113.29" ytl="230.99" xbr="249.10" ybr="366.81" z_order="0">
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="1236.02" ytl="221.94" xbr="2376.85" ybr="448.29" z_order="0">
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="108.76" ytl="3101.19" xbr="258.15" ybr="3264.17" z_order="0">
+      <attribute name="blank">false</attribute>
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="2231.98" ytl="3119.30" xbr="2394.96" ybr="3277.75" z_order="0">
+      <attribute name="blank">false</attribute>
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="1516.70" ytl="2204.80" xbr="2191.20" ybr="2394.96" z_order="0">
+      <attribute name="blank">true</attribute>
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="104.23" ytl="194.77" xbr="724.45" ybr="375.86" z_order="0">
+      <attribute name="blank">false</attribute>
+    </box>
+  </image>
+  <image id="1" name="f0011_13_page_2.png" width="2560" height="3300">
+    <box label="roi" source="manual" occluded="0" xtl="222.83" ytl="588.22" xbr="666.24" ybr="707.60" z_order="0">
+      <attribute name="blank">false</attribute>
+    </box>
+    <box label="censor" source="manual" occluded="0" xtl="222.83" ytl="2233.95" xbr="2303.45" ybr="3056.82" z_order="0">
+    </box>
+    <box label="censor" source="manual" occluded="0" xtl="158.88" ytl="417.70" xbr="2358.90" ybr="584.00" z_order="0">
+    </box>
+    <box label="censor" source="manual" occluded="0" xtl="1518.95" ytl="686.28" xbr="2141.43" ybr="997.52" z_order="0">
+    </box>
+    <box label="censor" source="manual" occluded="0" xtl="222.83" ytl="1871.55" xbr="2311.98" ybr="1973.88" z_order="0">
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="751.51" ytl="238.60" xbr="1740.66" ybr="353.72" z_order="0">
+    </box>
+    <box label="align" source="manual" occluded="0" xtl="2183.64" ytl="2963.02" xbr="2375.93" ybr="3142.09" z_order="0">
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="150.35" ytl="2963.02" xbr="337.95" ybr="3107.98" z_order="0">
+      <attribute name="blank">false</attribute>
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="2141.43" ytl="1364.19" xbr="2273.60" ybr="1658.37" z_order="0">
+      <attribute name="blank">true</attribute>
+    </box>
+    <box label="roi" source="manual" occluded="0" xtl="1796.09" ytl="392.09" xbr="2149.96" ybr="464.57" z_order="0">
+      <attribute name="blank">false</attribute>
+    </box>
+  </image>
+</annotations>

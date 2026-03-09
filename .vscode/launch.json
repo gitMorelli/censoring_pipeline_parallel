@@ -1,0 +1,263 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=
+    
+    // old path: Z:/programs/miniconda3/
+
+    //new path: "//vms-e34n-databr/2025-handwriting/programs/miniconda3/"
+
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Python Debugger: png_from_pdf",
+            "type": "debugpy",
+            "request": "launch",
+            //"program": "${workspaceFolder}/src/scripts/png_from_pdf.py",
+            "module": "src.scripts.png_from_pdf",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--verbose"
+            ]
+        },
+        {
+            "name": "Python Debugger: png_from_pdf_q5_test (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            //"program": "${workspaceFolder}/src/scripts/png_from_pdf.py",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "module": "src.scripts.png_from_pdf_q5_test",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--verbose",
+                "--save_debug_times"
+            ]
+        },
+        {
+            "name": "Python Debugger: convert_additional_templates (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            //"program": "${workspaceFolder}/src/scripts/png_from_pdf.py",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "module": "src.scripts.convert_additional_templates",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "QT_QPA_PLATFORM_PLUGIN_PATH":"//vms-e34n-databr//2025-handwriting\\programs\\miniconda3\\envs\\LocalEnv\\Library\\lib\\qt6\\plugins\\platforms"
+            },
+            "args": [
+                "--verbose",
+            ]
+        },
+        {
+            "name": "Python Debugger: generate_annotations",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.scripts.generate_annotations",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--verbose"
+            ]
+        },
+        {
+            "name": "Python Debugger: generate_annotations (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "module": "src.scripts.generate_annotations",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "QT_QPA_PLATFORM_PLUGIN_PATH":"//vms-e34n-databr//2025-handwriting\\programs\\miniconda3\\envs\\LocalEnv\\Library\\lib\\qt6\\plugins\\platforms"
+            },
+            "args": [
+                "--verbose"
+            ]
+        },
+        {
+            "name": "Python Debugger: censor",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.scripts.censor",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "--verbose",
+                "--enlarge_censor_boxes"
+                //"--skip_checking",
+                //"--skip_aligning"
+            ]
+        },
+        {
+            "name": "Python Debugger: censor (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.scripts.censor",
+            "console": "integratedTerminal",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "QT_QPA_PLATFORM_PLUGIN_PATH":"//vms-e34n-databr//2025-handwriting\\programs\\miniconda3\\envs\\LocalEnv\\Library\\lib\\qt6\\plugins\\platforms"
+            },
+            "args": [
+                //"--verbose",
+                //"--enlarge_censor_boxes",
+                //"--save_debug_images",
+                //"--save_debug_times",
+                //"--skip_checking_2", //if i skip only this -> 29s
+                //"--skip_checking_1" //if i skip both -> 16.9s
+            ]
+        },
+        {
+            "name": "Python Debugger: tests (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.scripts.tests",
+            "console": "integratedTerminal",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "QT_QPA_PLATFORM_PLUGIN_PATH":"//vms-e34n-databr//2025-handwriting\\programs\\miniconda3\\envs\\LocalEnv\\Library\\lib\\qt6\\plugins\\platforms"
+            },
+            "args": [
+            ]
+        },
+        {
+            "name": "Python Debugger: id_identification (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.scripts.id_identification",
+            "console": "integratedTerminal",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "QT_QPA_PLATFORM_PLUGIN_PATH":"//vms-e34n-databr//2025-handwriting\\programs\\miniconda3\\envs\\LocalEnv\\Library\\lib\\qt6\\plugins\\platforms"
+            },
+            "args": [
+            ]
+        },
+        {
+            "name": "Python Debugger: pipeline_censor_knowing_id_and_template (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            //"program": "${workspaceFolder}/src/scripts/png_from_pdf.py",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "module": "src.scripts.pipeline_censor_knowing_id_and_template",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "QT_QPA_PLATFORM_PLUGIN_PATH":"//vms-e34n-databr//2025-handwriting\\programs\\miniconda3\\envs\\LocalEnv\\Library\\lib\\qt6\\plugins\\platforms"
+            },
+            "args": [
+                "--verbose",
+                //"--delete_previous_results",
+                "--save_debug_images",
+                "--save_debug_times"
+            ]
+        },
+        // --------------------------------------------- TESTS -------------------------------------------------------------
+        {
+            "name": "Python Debugger: read_samples_from_shared_folder (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            //"program": "${workspaceFolder}/src/scripts/png_from_pdf.py",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "module": "src.tests.read_samples_from_shared_folder",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "QT_QPA_PLATFORM_PLUGIN_PATH":"//vms-e34n-databr//2025-handwriting\\programs\\miniconda3\\envs\\LocalEnv\\Library\\lib\\qt6\\plugins\\platforms"
+            },
+            "args": [
+            ]
+        },
+        {
+            "name": "Python Debugger: tesseract_tests (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            //"program": "${workspaceFolder}/src/scripts/png_from_pdf.py",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "module": "src.tests.tesseract_tests",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "QT_QPA_PLATFORM_PLUGIN_PATH":"//vms-e34n-databr//2025-handwriting\\programs\\miniconda3\\envs\\LocalEnv\\Library\\lib\\qt6\\plugins\\platforms"
+            },
+            "args": [
+            ]
+        },
+        {
+            "name": "Python Debugger: move_annotated_to_test_folder (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            //"program": "${workspaceFolder}/src/scripts/png_from_pdf.py",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "module": "src.tests.move_annotated_to_test_folder",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "QT_QPA_PLATFORM_PLUGIN_PATH":"//vms-e34n-databr//2025-handwriting\\programs\\miniconda3\\envs\\LocalEnv\\Library\\lib\\qt6\\plugins\\platforms"
+            },
+            "args": [
+            ]
+        },
+        {
+            "name": "Python Debugger: group_files_by_id (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            //"program": "${workspaceFolder}/src/scripts/png_from_pdf.py",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "module": "src.tests.group_files_by_id",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "QT_QPA_PLATFORM_PLUGIN_PATH":"//vms-e34n-databr//2025-handwriting\\programs\\miniconda3\\envs\\LocalEnv\\Library\\lib\\qt6\\plugins\\platforms"
+            },
+            "args": [
+            ]
+        },
+        {
+            "name": "Python Debugger: check_ref_Qx_files (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            //"program": "${workspaceFolder}/src/scripts/png_from_pdf.py",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "module": "src.tests.check_ref_Qx_files",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "QT_QPA_PLATFORM_PLUGIN_PATH":"//vms-e34n-databr//2025-handwriting\\programs\\miniconda3\\envs\\LocalEnv\\Library\\lib\\qt6\\plugins\\platforms"
+            },
+            "args": [
+            ]
+        },
+        {
+            "name": "Python Debugger: check_id_association_w_table (LocalEnv)",
+            "type": "debugpy",
+            "request": "launch",
+            //"program": "${workspaceFolder}/src/scripts/png_from_pdf.py",
+            "python": "//vms-e34n-databr//2025-handwriting/programs/miniconda3//envs/LocalEnv/python.exe",
+            "module": "src.tests.check_id_association_w_table",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "QT_QPA_PLATFORM_PLUGIN_PATH":"//vms-e34n-databr//2025-handwriting\\programs\\miniconda3\\envs\\LocalEnv\\Library\\lib\\qt6\\plugins\\platforms"
+            },
+            "args": [
+            ]
+        },
+        
+]
+}

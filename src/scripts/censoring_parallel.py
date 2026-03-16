@@ -4,6 +4,7 @@ import logging
 import logging.handlers
 #### FORCE SINGLE THREADING for some libraries ########
 import os
+import time
 from threadpoolctl import threadpool_limits
 os.environ["OMP_NUM_THREADS"] = "1" #numpy
 os.environ["MKL_NUM_THREADS"] = "1" #numpy
@@ -20,6 +21,7 @@ import multiprocessing as mp
 import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed, TimeoutError
 import csv
+import signal
 
 import pandas as pd
 import numpy as np
@@ -143,9 +145,462 @@ CHECKING_SECOND_STAGE = 'orb' #options are 'template' or 'orb'
 THICKNESS_PCT = 0.1
 SPACING_MULT = 0.1
 
+########### main async approach ########################
+def main(test_size=-1,timeout_lim=120,test=False):
+    args = parse_args()
+
+    ####### INITIALIZING PATHS #########
+    templates_path = args.templates_path
+    pdf_load_path = args.pdf_load_path
+    csv_load_path = args.csv_load_path
+    save_path = args.save_path
+    save_debug_times = args.save_debug_times
+    save_debug_images = args.save_debug_images
+    #total_arrays = args.total_arrays
+    n_workers = args.n_workers
+
+    #folder for the csv table
+    updated_csv_paths = os.path.join(save_path,"ref_pdf")
+    #folder for the global logging
+    log_path=os.path.join(save_path,'logs')
+    #folder per il debug
+    debug_path = os.path.join(save_path,'debug')
+    #load path for the pdfs
+    questionnairres_log_path=os.path.join(pdf_load_path, f"Q{QUESTIONNAIRE}")
+    #saving the censored images here
+    censored_images_path = os.path.join(save_path,'censored_images')
 
 
-def main(test_size=-1,chunk_size_mp=10,timeout_lim=120):
+    ####### CLEANING FOLDERS (only in debugging) ###########
+    '''if args.delete_previous_results:
+        if os.path.exists(updated_csv_paths):
+            remove_folder(updated_csv_paths)
+        if os.path.exists(log_path):
+            remove_folder(log_path)
+        if os.path.exists(censored_images_path):
+            remove_folder(censored_images_path)
+        if os.path.exists(debug_path):
+            remove_folder(debug_path)'''
+    
+    ########## Initializing loggers ##################
+    #console logger
+    #logger.setLevel(logging.DEBUG)
+    #logging.getLogger().setLevel(logging.DEBUG)
+
+    #file logger (global logger for the execution)
+    create_folder(log_path, parents=True, exist_ok=True)
+    file_logger=FileWriter(enabled=False,path=os.path.join(log_path,f"global_logger.txt"))
+    # create folder to save debug results
+    create_folder(debug_path, parents=True, exist_ok=True)
+
+    ########## LOAD the DATFRAME with the subject ids and filenames ###############
+    #csv_modified_path = os.path.join(updated_csv_paths,f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
+    csv_modified_path = os.path.join(csv_load_path,f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
+    if os.path.exists(csv_modified_path)==False: #if the csv has not been preprocessed yet
+        df = preprocess_df(os.path.join(csv_load_path,f"ref_pdf_Q{QUESTIONNAIRE}.csv"),FILENAME_COL, ID_COL,USED_COL,WARNING_ORDERING_COL_NAME,WARNING_CENSORING_COL_NAME)
+        create_folder(updated_csv_paths, parents=True, exist_ok=True)
+        df.to_csv(csv_modified_path)
+    
+    
+    #for testing i am using used_col in the opposite way 
+    #df = load_preprocessed_df(csv_modified_path,used_col_name=USED_COL,id_col_name=ID_COL) #load the preprocessed df
+    #file_logger.write(df.head(10).to_string()) #log the first 10 lines of the df to check it is correct
+    df=pd.read_csv(csv_modified_path)
+    #select only the lines with used=False
+    df = df[df[USED_COL]==True] 
+    print(f"Total number of unique ids to process: {df[ID_COL].nunique()}")
+
+    #load the annotation files (full paths and names)
+    annotation_file_names, annotation_files = load_annotation_tree(file_logger, templates_path)
+    #i select only the template of interest (eg for Q5 only doc_5.json)
+    selected_templates = select_specific_annotation_file(QUESTIONNAIRE)
+    #print("selected templates: ",selected_templates)
+
+    # I open the jsons for the selected templates and save them in a list, i also open the corresponding pre_computed data
+    # #this list is a single element for QX X>1 and two elements for X=1 
+    annotation_roots, npy_data = load_template_info(file_logger,annotation_files,annotation_file_names,
+                                                    templates_path, selected_files=selected_templates)
+    
+    pages_in_annotation = get_page_list(annotation_roots[0]) #is the same for both templates in Q1 case 
+    #so i can just take it from the first one
+    print("pages in annotations:", pages_in_annotation)
+
+    ##### PREPARE SHARED RESOURCES #############
+    shared_resources = {
+        'templates_path': templates_path,
+        'npy_data': npy_data,
+        'annotation_roots': annotation_roots,
+        'pages_in_annotation': pages_in_annotation,
+        'selected_templates': selected_templates,
+        # paths
+        'questionnairres_log_path' : questionnairres_log_path,
+        'debug_path': debug_path,
+        'censored_images_path': censored_images_path,
+        'updated_csv_paths': updated_csv_paths,
+        #args
+        'save_debug_times': save_debug_times,
+        'save_debug_images': save_debug_images,
+        'verbose': args.verbose,
+    }
+
+    # 2. SLURM CHUNKING LOGIC
+    # Get all unique IDs
+    all_unique_ids = df[ID_COL].unique()
+    
+    all_unique_ids=all_unique_ids[:test_size]
+
+    # Determine which IDs THIS specific Slurm task should handle
+    # Usage: sbatch --array=0-199 ... (for 200 chunks)
+    total_arrays = int(os.environ.get('SLURM_ARRAY_COUNT', 1))
+    chunk_idx = int(os.environ.get('SLURM_ARRAY_TASK_ID', 0))
+    chunk_size = len(all_unique_ids) // total_arrays
+    
+    start_idx = chunk_idx * chunk_size
+    end_idx = start_idx + chunk_size if chunk_idx < total_arrays-1 else len(all_unique_ids) #if i consider the last chinck i have to take all the remaining ids to avoid losing data
+    
+    my_ids = all_unique_ids[start_idx:end_idx]
+    print("Chunck of ids has length: ", len(my_ids))
+    
+    # Prepare the arguments for the multiprocessing pool
+    tasks = []
+    for uid in my_ids:
+        group = df[df[ID_COL] == uid]
+        tasks.append((uid, group, shared_resources))
+    
+    if test:
+        print("Running in test mode")
+        tasks = build_test_tasks()
+
+    # 3. RUN MULTIPROCESSING
+    cpus = int(os.environ.get('SLURM_CPUS_PER_TASK', 1))
+    print(f"Task {chunk_idx}: Processing {len(tasks)} IDs using {cpus} CPUs")
+    
+    # initialize process parameters
+    # 1. Define your Column Names
+    headers = [ID_COL, FILENAME_COL, USED_COL,WARNING_ORDERING_COL_NAME,WARNING_CENSORING_COL_NAME, 
+               'time','status','error']
+    if test:
+        headers = ['task_id', 'value', 'time', 'status', 'error']
+    ref_Qx_updated_path = os.path.join(updated_csv_paths,f"final_ref_pdf_Q{QUESTIONNAIRE}_chunk_{chunk_idx}.csv")
+    # 2. Initialize the file: Write the header once
+    # This will overwrite any existing file at that path
+    with open(ref_Qx_updated_path, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(headers)
+    
+    ctx = mp.get_context("spawn")  # safer on many platforms / libraries
+
+    buffer_size = 50  # Write every 50 tasks
+    poll_interval = 1
+    if test:
+        timeout_lim = 10
+        buffer_size = 1
+        poll_interval = 0.5
+    results_buffer = []
+    pending_tasks = list(tasks)
+    completed_task_ids = set()
+    timed_out_task_ids = set()
+
+    def new_pool():
+        return ctx.Pool(processes=n_workers, maxtasksperchild=1)
+
+    pool = new_pool()
+
+    # active_jobs: async_result -> metadata
+    active_jobs = {}
+
+    def submit_until_full():
+        while pending_tasks and len(active_jobs) < n_workers:
+            task = pending_tasks.pop(0)
+            if test:
+                async_result = pool.apply_async(process_wrapper_test, (task,))
+            else:
+                async_result = pool.apply_async(process_wrapper, (task,))
+            active_jobs[async_result] = {
+                "task": task,
+                "task_id": task[0],
+                "submitted_at": time.monotonic(),
+            }
+
+    try:
+        submit_until_full()
+
+        while active_jobs or pending_tasks:
+            finished = []
+            timed_out = []
+
+            now = time.monotonic()
+
+            # 1. Check each active job
+            for async_result, meta in list(active_jobs.items()):
+                elapsed = now - meta["submitted_at"]
+
+                if async_result.ready():
+                    finished.append((async_result, meta))
+                elif elapsed > timeout_lim:
+                    timed_out.append((async_result, meta))
+
+            # 2. Handle finished jobs
+            for async_result, meta in finished:
+                task_info = meta["task"]
+                task_id = meta["task_id"]
+
+                try:
+                    item = async_result.get()   # no timeout needed; already ready()
+
+                    sub_df = item_to_dataframe_row(item, headers)
+                    append_result_row(results_buffer, sub_df, headers)
+
+                    completed_task_ids.add(task_id)
+
+                except Exception as e:
+                    # Worker-level exception, crash, serialization problem, etc.
+                    print(f"[Worker exception] task_id={task_id}: {e}")
+
+                    item = make_worker_exception_item(task_info, e)
+                    sub_df = item_to_dataframe_row(item, headers)
+                    append_result_row(results_buffer, sub_df, headers)
+
+                    completed_task_ids.add(task_id)
+
+                del active_jobs[async_result]
+
+            # 3. Handle timeouts
+            if timed_out:
+                print(
+                    f"[Timeout] {len(timed_out)} task(s) exceeded {timeout_lim}s. "
+                    "Terminating pool and resubmitting unfinished work."
+                )
+
+                # Mark timed-out tasks as timed out
+                timed_out_ids_this_round = set()
+                for async_result, meta in timed_out:
+                    task_info = meta["task"]
+                    task_id = meta["task_id"]
+
+                    item = make_timeout_item(task_info)
+                    sub_df = item_to_dataframe_row(item, headers)
+                    append_result_row(results_buffer, sub_df, headers)
+
+                    completed_task_ids.add(task_id)
+                    timed_out_task_ids.add(task_id)
+                    timed_out_ids_this_round.add(task_id)
+
+                # Tasks still active but not timed out yet were killed too when pool dies.
+                # We need to resubmit them.
+                survivors_to_resubmit = []
+                for async_result, meta in active_jobs.items():
+                    task_id = meta["task_id"]
+                    if task_id not in timed_out_ids_this_round:
+                        survivors_to_resubmit.append(meta["task"])
+
+                # Kill the whole pool to stop the hanging worker(s)
+                pool.terminate()
+                pool.join()
+
+                # Reset state
+                active_jobs.clear()
+
+                # Resubmit killed-but-not-timed-out tasks first
+                pending_tasks = survivors_to_resubmit + pending_tasks
+
+                # Create a fresh pool
+                pool = new_pool()
+
+            # 4. Flush buffer if needed
+            if len(results_buffer) >= buffer_size:
+                flush_buffer(results_buffer, ref_Qx_updated_path)
+
+            # 5. Top up the pool
+            submit_until_full()
+
+            # 6. Avoid busy waiting
+            if active_jobs:
+                time.sleep(poll_interval)
+
+        # Final flush
+        flush_buffer(results_buffer, ref_Qx_updated_path)
+
+    finally:
+        try:
+            pool.close()
+            pool.join()
+        except Exception:
+            try:
+                pool.terminate()
+                pool.join()
+            except Exception:
+                pass
+
+    if test:
+        print("\n=== SUMMARY ===")
+        print(f"CSV written to: {ref_Qx_updated_path}")
+
+        print("\n=== READ CSV BACK WITH PANDAS ===")
+        final_df = pd.read_csv(ref_Qx_updated_path)
+        print(final_df)
+
+        print("\n=== STATUS COUNTS ===")
+        print(final_df["status"].value_counts(dropna=False))
+
+        # Optional sanity checks
+        assert len(final_df) == len(tasks), (
+            f"Expected {len(tasks)} rows, found {len(final_df)}"
+        )
+
+        expected_statuses = {"success", "failed", "timeout", "worker_exception"}
+        found_statuses = set(final_df["status"].unique())
+        print("\nExpected statuses subset:", expected_statuses)
+        print("Found statuses:", found_statuses)
+        return 
+    #open the csv and print a summary of the results
+    final_df = pd.read_csv(ref_Qx_updated_path)
+    #print the number of failed and timed out tasks
+    print("Summary of results:")
+    print(final_df['status'].value_counts())
+    #for each unique_id that wa succesfully completed print the execution time
+    successful_tasks = final_df[final_df['status']=='success']
+    for i, row in successful_tasks.iterrows():
+        print(f"Result for task {row[ID_COL]}: {row['time']:.2f} seconds")
+
+    return {
+        "completed_task_ids": completed_task_ids,
+        "timed_out_task_ids": timed_out_task_ids,
+    }
+
+def append_result_row(results_buffer, sub_df, headers):
+    sub_df = sub_df.copy()
+    sub_df = sub_df[headers]
+    results_buffer.extend(sub_df.values.tolist())
+
+def flush_buffer(results_buffer, output_path):
+    if results_buffer:
+        with open(output_path, "a", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerows(results_buffer)
+        results_buffer.clear()
+
+def make_timeout_item(task_info):
+    task_id = task_info[0]
+    sub_df = task_info[1].copy()
+    return {
+        "task_id": task_id,
+        "success": False,
+        "result": sub_df,
+        "time": np.nan,
+        "error": {
+            "type": "Timeout",
+            "message": "Task exceeded allowed runtime",
+            "traceback": "",
+        },
+        "status": "timeout",
+    }
+
+def make_worker_exception_item(task_info, exc):
+    task_id = task_info[0]
+    sub_df = task_info[1].copy()
+    return {
+        "task_id": task_id,
+        "success": False,
+        "result": sub_df,
+        "time": np.nan,
+        "error": {
+            "type": type(exc).__name__,
+            "message": str(exc),
+            "traceback": "",
+        },
+        "status": "worker_exception",
+    }
+
+def item_to_dataframe_row(item, headers):
+    sub_df = item["result"].copy()
+    sub_df["time"] = item["time"]
+
+    if "status" in item:
+        sub_df["status"] = item["status"]
+    else:
+        sub_df["status"] = "success" if item["success"] else "failed"
+
+    sub_df["error"] = "" if item.get("error") is None else str(item["error"])
+    sub_df = sub_df[headers]
+    return sub_df
+
+### tests ####
+def process_subject_test(task_id, group, mode):
+    """
+    Simulated task behavior.
+
+    Parameters
+    ----------
+    task_id : int
+    group   : pd.DataFrame
+    mode    : str
+        One of: ok, py_exception, hang, worker_crash, sigkill
+    """
+    if mode == "ok":
+        out = group.copy()
+        out["processed"] = 1
+        return out
+
+    elif mode == "py_exception":
+        raise ValueError(f"Python exception for task {task_id}")
+
+    elif mode == "hang":
+        time.sleep(999999)
+
+    elif mode == "worker_crash":
+        os._exit(1)   # this will likely end up in your timeout path
+
+    elif mode == "unpicklable_result":
+        return lambda x: x   # triggers get()/pickling failure in parent
+
+    else:
+        raise RuntimeError(f"Unknown mode: {mode}")
+
+def make_group(task_id):
+    return pd.DataFrame({"task_id": [task_id], "value": [task_id * 10]})
+
+def build_test_tasks():
+    # task tuple: (task_id, group_df, mode)
+    return [
+        (1, make_group(1), "ok"),
+        (2, make_group(2), "py_exception"),
+        (3, make_group(3), "hang"),
+        (4, make_group(4), "worker_crash"),
+        (5, make_group(5), "unpicklable_result"),
+        (6, make_group(6), "ok"),
+    ]
+
+def process_wrapper_test(task_tuple):
+    task_id = task_tuple[0]
+    group = task_tuple[1]
+    try:
+        #compute time for the process 
+        t_0 = perf_counter()
+        # Pass the rest of the tuple to your actual function
+        result = process_subject_test(*task_tuple) 
+        t_end = perf_counter()
+        return {
+            "task_id": task_id,
+            "success": True,
+            "result": result,
+            "time": t_end - t_0,
+            "error": None,
+        }
+    except Exception as e:
+        return {
+            "task_id": task_id,
+            "success": False,
+            "result": group.copy(), #return the group of the subject that caused the error to facilitate debugging
+            "time": None,
+            "error": {
+                "type": type(e).__name__,
+                "message": str(e),
+                "traceback": traceback.format_exc(),
+            },
+        }
+########### main process Pool executor style #############
+def main_processPoolExecutor_style(test_size=-1,chunk_size_mp=10,timeout_lim=120):
     args = parse_args()
 
     ####### INITIALIZING PATHS #########
@@ -322,7 +777,7 @@ def main(test_size=-1,chunk_size_mp=10,timeout_lim=120):
                 sub_df=sub_df[headers] #reorder columns to match the header order
                 
                 # Convert row to list format for CSV writing
-                results_buffer.append(sub_df.values.flatten().tolist())
+                results_buffer.extend(sub_df.values.tolist())
             
             except Exception as e:
                 # Recover task info from the mapping
@@ -335,7 +790,7 @@ def main(test_size=-1,chunk_size_mp=10,timeout_lim=120):
                 sub_df=sub_df[headers] #reorder columns to match the header order
                 
                 # Convert row to list format for CSV writing
-                results_buffer.append(sub_df.values.flatten().tolist())
+                results_buffer.extend(sub_df.values.tolist())
                 print(f"Generated an exception: {e}")
 
             # 2. Check buffer size and write
@@ -390,6 +845,35 @@ def main(test_size=-1,chunk_size_mp=10,timeout_lim=120):
 
     return 0
 
+def process_wrapper(task_tuple):
+    task_id = task_tuple[0]
+    group = task_tuple[1]
+    try:
+        #compute time for the process 
+        t_0 = perf_counter()
+        # Pass the rest of the tuple to your actual function
+        result = process_subject(*task_tuple) 
+        t_end = perf_counter()
+        return {
+            "task_id": task_id,
+            "success": True,
+            "result": result,
+            "time": t_end - t_0,
+            "error": None,
+        }
+    except Exception as e:
+        return {
+            "task_id": task_id,
+            "success": False,
+            "result": group.copy(), #return the group of the subject that caused the error to facilitate debugging
+            "time": None,
+            "error": {
+                "type": type(e).__name__,
+                "message": str(e),
+                "traceback": traceback.format_exc(),
+            },
+        }
+
 def assemble_final_csv(successful_results, failed_results, missing_groups, 
                        filename_col,id_col,used_col_name='Used',warning_ordering_col_name='Warning_ordering',warning_censoring_col_name='Warning_censoring'):
     #iterate on the successful results and concatenate the dataframes 
@@ -425,6 +909,8 @@ def assemble_final_csv(successful_results, failed_results, missing_groups,
     final_df[USED_COL]==True
 
     return final_df
+
+############################################################
 
 def multi_threading_test():
     args = parse_args()
@@ -796,35 +1282,6 @@ def multi_node_test(n_ids):
     print(f"Task {chunk_idx} completed. Successfully processed {tot}/{len(tasks)} subjects.")'''
 
     return 0
-
-def process_wrapper(task_tuple):
-    task_id = task_tuple[0]
-    group = task_tuple[1]
-    try:
-        #compute time for the process 
-        t_0 = perf_counter()
-        # Pass the rest of the tuple to your actual function
-        result = process_subject(*task_tuple) #returns 0 if everything is ok, 1 if there is an error
-        t_end = perf_counter()
-        return {
-            "task_id": task_id,
-            "success": True,
-            "result": result,
-            "time": t_end - t_0,
-            "error": None,
-        }
-    except Exception as e:
-        return {
-            "task_id": task_id,
-            "success": False,
-            "result": group.copy(), #return the group of the subject that caused the error to facilitate debugging
-            "time": None,
-            "error": {
-                "type": type(e).__name__,
-                "message": str(e),
-                "traceback": traceback.format_exc(),
-            },
-        }
 
 def process_subject(unique_id, group, shared_resources):
     cv2.setNumThreads(0)
@@ -1831,7 +2288,7 @@ def parse_args():
     return parser.parse_args()
 
 if __name__ == "__main__":
-    main(test_size=50,chunk_size_mp=10,timeout_lim=120)
+    main(test_size=50,timeout_lim=120,test=True)
     #multi_threading_test()
     #multi_node_test(90)
     # A huge matrix multiplication that takes ~5-10 seconds

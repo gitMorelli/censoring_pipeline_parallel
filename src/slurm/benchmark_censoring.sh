@@ -2,7 +2,7 @@
 #SBATCH --job-name=censoring_parallel_test
 #SBATCH --nodes=1                     # 1 Node per array task
 #SBATCH --ntasks=1                    # 1 task per array job
-#SBATCH --cpus-per-task=18           # Use 2xnum_workers+2 CPUs per node
+#SBATCH --cpus-per-task=3           # Use 2xnum_workers+2 CPUs per node
 #SBATCH --mem=10G                     # Request enough RAM for 16 parallel processes
 #SBATCH --time=00:10:00               # Estimated time for 500 images
 #SBATCH --partition=shortq
@@ -27,6 +27,6 @@ cd $PROJECT_ROOT
 
 # 2. Run using the -m flag (No .py extension, use dots for path)
 $ENV_PYTHON -m src.scripts.censoring_parallel \
-    --n_workers 16 \
+    --n_workers 2 \
     --save_debug_times
 #$ENV_PYTHON -m src.scripts.censoring_parallel_advanced

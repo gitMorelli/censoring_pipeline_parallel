@@ -8,7 +8,8 @@ from difflib import SequenceMatcher
 import os
 import math
 import pytesseract #for ocr
-pytesseract.pytesseract.tesseract_cmd = r'//vms-e34n-databr/2025-handwriting\programs\tesseract\tesseract.exe'
+#pytesseract.pytesseract.tesseract_cmd = r'//vms-e34n-databr/2025-handwriting\programs\tesseract\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'/home/a_morelli/.conda/envs/CensoringEnv/bin/tesseract'
 
 from src.utils.file_utils import list_subfolders,list_files_with_extension,sort_files_by_page_number,get_page_number, load_template_info, deserialize_keypoints
 from src.utils.file_utils import get_basename, create_folder, check_name_matching, remove_folder, load_annotation_tree, load_subjects_tree

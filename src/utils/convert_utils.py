@@ -1,4 +1,4 @@
-from pdf2image import convert_from_path
+#from pdf2image import convert_from_path
 import fitz  # PyMuPDF
 import os
 import numpy as np
@@ -31,7 +31,7 @@ from src.utils.censor_utils import save_as_is_no_censoring, save_original_w_boxe
 from src.utils.censor_utils import enlarge_censor_regions, save_pre_post_boxes, save_censored_image, generate_warning_string, censor_page_base
 
 
-POPPLER_PATH = "\\vms-e34n-databr\\2025-handwriting\\programs\\Release-25.11.0-0\\poppler-25.11.0\\Library\\bin" #"Z:\\programs\\Release-25.11.0-0\\poppler-25.11.0\\Library\\bin" #"C:\\Program Files\\poppler-25.11.0\\Library\\bin"
+'''POPPLER_PATH = "\\vms-e34n-databr\\2025-handwriting\\programs\\Release-25.11.0-0\\poppler-25.11.0\\Library\\bin" #"Z:\\programs\\Release-25.11.0-0\\poppler-25.11.0\\Library\\bin" #"C:\\Program Files\\poppler-25.11.0\\Library\\bin"
 
 def pdf_to_images(pdf_path):
     """Convert PDF pages to PNG images.
@@ -43,7 +43,7 @@ def pdf_to_images(pdf_path):
         List of PNG images converted from the PDF.
     """
     images = convert_from_path(pdf_path, poppler_path=POPPLER_PATH)
-    return images
+    return images '''
 
 def get_n_pages(pdf_path): 
     ''' given a pdf file it returns the number of pages'''

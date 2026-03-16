@@ -15,9 +15,11 @@ class FileWriter:
         self.time_dict[key] = perf_counter()
     
     def call_end(self, key,block=False):
-        self.write(f"time for process {key} = {( perf_counter()-self.time_dict[key] ):0.6f}s")
+        dtime = perf_counter()-self.time_dict[key]
+        self.write(f"time for process {key} = {( dtime ):0.6f}s")
         if block:
             self.write("-"*50)
+        return dtime
 
 
     def write(self, text: str,mode="a"):

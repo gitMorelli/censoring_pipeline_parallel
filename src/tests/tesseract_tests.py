@@ -12,7 +12,8 @@ from PyPDF2 import PdfReader
 import re
 import math
 import pytesseract #for ocr
-pytesseract.pytesseract.tesseract_cmd = r'//vms-e34n-databr/2025-handwriting\programs\tesseract\tesseract.exe'
+#pytesseract.pytesseract.tesseract_cmd = r'//vms-e34n-databr/2025-handwriting\programs\tesseract\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'/home/a_morelli/.conda/envs/CensoringEnv/bin/tesseract'
 
 from src.utils.json_parsing import get_attributes_by_page 
 from src.utils.convert_utils import process_pdf_files

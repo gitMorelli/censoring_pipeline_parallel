@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 import argparse
 import logging
-import logging.handlers
 #### FORCE SINGLE THREADING for some libraries ########
 import os
-from threadpoolctl import threadpool_limits
-os.environ["OMP_NUM_THREADS"] = "1" #numpy
-os.environ["MKL_NUM_THREADS"] = "1" #numpy
-os.environ["OPENBLAS_NUM_THREADS"] = "1"
-os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
-os.environ["NUMEXPR_NUM_THREADS"] = "1"
+#os.environ["OMP_NUM_THREADS"] = "1" #numpy
+#os.environ["MKL_NUM_THREADS"] = "1" #numpy
+#os.environ["OPENBLAS_NUM_THREADS"] = "1"
+#os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+#os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
 
 from time import perf_counter
@@ -17,9 +15,6 @@ from pathlib import Path
 import sys
 import copy
 import multiprocessing as mp
-import traceback
-from concurrent.futures import ProcessPoolExecutor, as_completed, TimeoutError
-import csv
 
 import pandas as pd
 import numpy as np
@@ -49,12 +44,11 @@ from src.utils.debug_utils import visualize_templates_w_annotations, save_w_boxe
 
 from src.utils.logging import FileWriter, initialize_logger
  
-'''logging.basicConfig(
-    filename='parallel_processing.log',
-    level=logging.DEBUG,
-    format='%(asctime)s [%(levelname)s] %(processName)s: %(message)s'
+logging.basicConfig( 
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
-logger = logging.getLogger(__name__)'''
+logger = logging.getLogger(__name__)
 
 PDF_LOAD_PATH= "/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization" #"//smb-recherche-s1.prod-powerscale.intra.igr.fr/E34N_HANDWRITING$\\Fichiers"#additional"#100263_template"
 CSV_LOAD_PATH= "/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization/ref_pdf"# "//smb-recherche-s1.prod-powerscale.intra.igr.fr/E34N_HANDWRITING$\\ref_pdf_Qx"#additional"#100263_template"
@@ -145,7 +139,7 @@ SPACING_MULT = 0.1
 
 
 
-def main(test_size=-1,chunk_size_mp=10,timeout_lim=120):
+def main():
     args = parse_args()
 
     ####### INITIALIZING PATHS #########
@@ -183,9 +177,8 @@ def main(test_size=-1,chunk_size_mp=10,timeout_lim=120):
     
     ########## Initializing loggers ##################
     #console logger
-    #logger.setLevel(logging.DEBUG)
-    #logging.getLogger().setLevel(logging.DEBUG)
-
+    logger.setLevel(logging.DEBUG)
+    logging.getLogger().setLevel(logging.DEBUG)
     #file logger (global logger for the execution)
     create_folder(log_path, parents=True, exist_ok=True)
     file_logger=FileWriter(enabled=False,path=os.path.join(log_path,f"global_logger.txt"))
@@ -195,301 +188,6 @@ def main(test_size=-1,chunk_size_mp=10,timeout_lim=120):
     global_time_logger=FileWriter(enabled=False,path=os.path.join(log_path,f"global_time_logger.txt"))
     # create folder to save debug results
     create_folder(debug_path, parents=True, exist_ok=True)
-
-    '''#parallel loggign
-    # 1. Setup the Queue and the File Handler
-    manager = mp.Manager()
-    log_queue = manager.Queue()
-    # Define the format and where the file goes
-    threaded_log_path = os.path.join(log_path, "parallel_run.log")
-    file_handler = logging.FileHandler(threaded_log_path)
-    formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(processName)s: %(message)s')
-    file_handler.setFormatter(formatter)
-    # 2. Start the Listener
-    # This stays in the MAIN process but runs in the background
-    listener = logging.handlers.QueueListener(log_queue, file_handler)
-    listener.start()'''
-
-    ########## LOAD the DATFRAME with the subject ids and filenames ###############
-    #csv_modified_path = os.path.join(updated_csv_paths,f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
-    csv_modified_path = os.path.join(csv_load_path,f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
-    if os.path.exists(csv_modified_path)==False: #if the csv has not been preprocessed yet
-        df = preprocess_df(os.path.join(csv_load_path,f"ref_pdf_Q{QUESTIONNAIRE}.csv"),FILENAME_COL, ID_COL,USED_COL,WARNING_ORDERING_COL_NAME,WARNING_CENSORING_COL_NAME)
-        create_folder(updated_csv_paths, parents=True, exist_ok=True)
-        df.to_csv(csv_modified_path)
-    
-    
-    #for testing i am using used_col in the opposite way 
-    #df = load_preprocessed_df(csv_modified_path,used_col_name=USED_COL,id_col_name=ID_COL) #load the preprocessed df
-    #file_logger.write(df.head(10).to_string()) #log the first 10 lines of the df to check it is correct
-    df=pd.read_csv(csv_modified_path)
-    #select only the lines with used=False
-    df = df[df[USED_COL]==True] 
-    print(f"Total number of unique ids to process: {df[ID_COL].nunique()}")
-
-    #load the annotation files (full paths and names)
-    annotation_file_names, annotation_files = load_annotation_tree(file_logger, templates_path)
-    #i select only the template of interest (eg for Q5 only doc_5.json)
-    selected_templates = select_specific_annotation_file(QUESTIONNAIRE)
-    #print("selected templates: ",selected_templates)
-
-    # I open the jsons for the selected templates and save them in a list, i also open the corresponding pre_computed data
-    # #this list is a single element for QX X>1 and two elements for X=1 
-    annotation_roots, npy_data = load_template_info(file_logger,annotation_files,annotation_file_names,
-                                                    templates_path, selected_files=selected_templates)
-    
-    pages_in_annotation = get_page_list(annotation_roots[0]) #is the same for both templates in Q1 case 
-    #so i can just take it from the first one
-    print("pages in annotations:", pages_in_annotation)
-
-    ##### PREPARE SHARED RESOURCES #############
-    shared_resources = {
-        'templates_path': templates_path,
-        'npy_data': npy_data,
-        'annotation_roots': annotation_roots,
-        'pages_in_annotation': pages_in_annotation,
-        'selected_templates': selected_templates,
-        # paths
-        'questionnairres_log_path' : questionnairres_log_path,
-        'debug_path': debug_path,
-        'censored_images_path': censored_images_path,
-        'updated_csv_paths': updated_csv_paths,
-        #args
-        'save_debug_times': save_debug_times,
-        'save_debug_images': save_debug_images,
-        'verbose': args.verbose,
-    }
-
-    # 2. SLURM CHUNKING LOGIC
-    # Get all unique IDs
-    all_unique_ids = df[ID_COL].unique()
-    
-    all_unique_ids=all_unique_ids[:test_size]
-
-    # Determine which IDs THIS specific Slurm task should handle
-    # Usage: sbatch --array=0-199 ... (for 200 chunks)
-    total_arrays = int(os.environ.get('SLURM_ARRAY_COUNT', 1))
-    chunk_idx = int(os.environ.get('SLURM_ARRAY_TASK_ID', 0))
-    chunk_size = len(all_unique_ids) // total_arrays
-    
-    start_idx = chunk_idx * chunk_size
-    end_idx = start_idx + chunk_size if chunk_idx < total_arrays-1 else len(all_unique_ids) #if i consider the last chinck i have to take all the remaining ids to avoid losing data
-    
-    my_ids = all_unique_ids[start_idx:end_idx]
-    print("Chunck of ids has length: ", len(my_ids))
-    
-    # Prepare the arguments for the multiprocessing pool
-    tasks = []
-    for uid in my_ids:
-        group = df[df[ID_COL] == uid]
-        tasks.append((uid, group, shared_resources))
-
-    # 3. RUN MULTIPROCESSING
-    cpus = int(os.environ.get('SLURM_CPUS_PER_TASK', 1))
-    print(f"Task {chunk_idx}: Processing {len(tasks)} IDs using {cpus} CPUs")
-    
-    successful_results = []
-    failed_results = []
-    timed_out_count = 0
-    received_task_ids = set()
-    buffer_size = 50  # Write every 50 tasks
-    results_buffer = []
-
-    # 1. Define your Column Names
-    headers = [ID_COL, FILENAME_COL, USED_COL,WARNING_ORDERING_COL_NAME,WARNING_CENSORING_COL_NAME, 
-               'time','status','error']
-    
-    # 2. Initialize the file: Write the header once
-    # This will overwrite any existing file at that path
-    with open(ref_Qx_updated_path, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(headers)
-    
-
-    with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        # Map futures to their original task data for recovery during timeout
-        future_to_task = {executor.submit(process_wrapper, t): t for t in tasks}
-        
-        for future in as_completed(future_to_task):
-            try:
-                # result() will raise TimeoutError if it exceeds timeout_lim
-                item = future.result(timeout=timeout_lim)
-                
-                sub_df = item["result"] 
-                sub_df['time'] = item["time"]
-                sub_df['status'] = "success" if item["success"] else "failed"
-                sub_df['error'] = item.get("error", "")
-                sub_df=sub_df[headers] #reorder columns to match the header order
-                
-                # Convert row to list format for CSV writing
-                results_buffer.append(sub_df.values.flatten().tolist())
-            
-            except Exception as e:
-                # Recover task info from the mapping
-                task_info = future_to_task[future]
-
-                sub_df = task_info[1] 
-                sub_df['time'] = np.nan
-                sub_df['status'] = "timeout"
-                sub_df['error'] = ""
-                sub_df=sub_df[headers] #reorder columns to match the header order
-                
-                # Convert row to list format for CSV writing
-                results_buffer.append(sub_df.values.flatten().tolist())
-                print(f"Generated an exception: {e}")
-
-            # 2. Check buffer size and write
-            if len(results_buffer) >= buffer_size:
-                with open(ref_Qx_updated_path, 'a', newline='') as f:
-                    writer = csv.writer(f)
-                    writer.writerows(results_buffer)
-                results_buffer.clear()
-
-        # 3. FINAL FLUSH: Write remaining items
-        if results_buffer:
-            with open(ref_Qx_updated_path, 'a', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerows(results_buffer)
-            results_buffer.clear()
-
-    # Find tasks that never produced any result
-    all_task_ids = {task[0] for task in tasks}
-    missing_task_ids = all_task_ids - received_task_ids
-    missing_groups = [group[1] for group in tasks if group[0] in missing_task_ids]
-
-    '''return {
-        "successful_results": successful_results,
-        "failed_results": failed_results,
-        "timed_out_count": timed_out_count,
-        "missing_task_ids": list(missing_task_ids),
-    }'''
-    
-    print(f"Task {chunk_idx} completed. Successful: {len(successful_results)}, Failed: {len(failed_results)}")
-    
-    print(f"Timed out: {timed_out_count}, Missing due to timeout: {len(missing_task_ids)}")
-
-    for i, res in enumerate(successful_results):
-        print(f"Result for task {res[0]}: {res[1]:.2f} seconds")
-    
-    # 4. Cleanup
-    #listener.stop()
-    #this saves all results in a single csv
-    final_df = assemble_final_csv(successful_results, failed_results, missing_groups,
-                          filename_col=FILENAME_COL, id_col=ID_COL, used_col_name=USED_COL,
-                          warning_ordering_col_name=WARNING_ORDERING_COL_NAME, warning_censoring_col_name=WARNING_CENSORING_COL_NAME)
-
-    ref_Qx_updated_path = os.path.join(updated_csv_paths,f"final_ref_pdf_Q{QUESTIONNAIRE}_chunk_{chunk_idx}.csv")
-    final_df.to_csv(ref_Qx_updated_path, index=False)
-
-    '''tot = 0
-    for r in results:
-        if r != 1:
-            print("Error in processing a subject, check the logs for details.")
-        tot+=r
-    print(f"Task {chunk_idx} completed. Successfully processed {tot}/{len(tasks)} subjects.")'''
-
-    return 0
-
-def assemble_final_csv(successful_results, failed_results, missing_groups, 
-                       filename_col,id_col,used_col_name='Used',warning_ordering_col_name='Warning_ordering',warning_censoring_col_name='Warning_censoring'):
-    #iterate on the successful results and concatenate the dataframes 
-    sub_dfs = [res[2] for res in successful_results] 
-    if sub_dfs:
-        final_df = pd.concat(sub_dfs, ignore_index=True)
-    else:
-        final_df = pd.DataFrame() #empty df if no successful results
-    final_df['time'] = [res[1] for res in successful_results] 
-    final_df['status'] = 'success'
-    column_names = final_df.columns.tolist()
-    expected_columns = {filename_col, id_col, used_col_name, warning_ordering_col_name, warning_censoring_col_name}
-    assert set(column_names) >= expected_columns, f"Missing expected columns in final dataframe. Found columns: {column_names}"
-
-    sub_dfs_failed = [res[2] for res in failed_results]
-    if sub_dfs_failed:
-        df_failed = pd.concat(sub_dfs_failed, ignore_index=True)
-    else:
-        df_failed = pd.DataFrame() #empty df if no successful results
-    df_failed['time'] = [res[1] for res in failed_results]
-    df_failed['status'] = 'failed'
-
-    sub_dfs_missing = [group for group in missing_groups]
-    if sub_dfs_missing:
-        df_missing = pd.concat(sub_dfs_missing, ignore_index=True)
-    else:
-        df_missing = pd.DataFrame() #empty df if no successful results
-    df_missing['time'] = np.nan
-    df_missing['status'] = 'Timeout'
-
-    final_df = pd.concat([final_df, df_failed, df_missing], ignore_index=True)
-
-    final_df[USED_COL]==True
-
-    return final_df
-
-def multi_threading_test():
-    args = parse_args()
-
-    ####### INITIALIZING PATHS #########
-    templates_path = args.templates_path
-    pdf_load_path = args.pdf_load_path
-    csv_load_path = args.csv_load_path
-    save_path = args.save_path
-    save_debug_times = args.save_debug_times
-    save_debug_images = args.save_debug_images
-    #total_arrays = args.total_arrays
-    n_workers = args.n_workers
-
-    #folder for the csv table
-    updated_csv_paths = os.path.join(save_path,"ref_pdf")
-    #folder for the global logging
-    log_path=os.path.join(save_path,'logs')
-    #folder per il debug
-    debug_path = os.path.join(save_path,'debug')
-    #load path for the pdfs
-    questionnairres_log_path=os.path.join(pdf_load_path, f"Q{QUESTIONNAIRE}")
-    #saving the censored images here
-    censored_images_path = os.path.join(save_path,'censored_images')
-
-
-    ####### CLEANING FOLDERS (only in debugging) ###########
-    '''if args.delete_previous_results:
-        if os.path.exists(updated_csv_paths):
-            remove_folder(updated_csv_paths)
-        if os.path.exists(log_path):
-            remove_folder(log_path)
-        if os.path.exists(censored_images_path):
-            remove_folder(censored_images_path)
-        if os.path.exists(debug_path):
-            remove_folder(debug_path)'''
-    
-    ########## Initializing loggers ##################
-    #console logger
-    #logger.setLevel(logging.DEBUG)
-    #logging.getLogger().setLevel(logging.DEBUG)
-
-    #file logger (global logger for the execution)
-    create_folder(log_path, parents=True, exist_ok=True)
-    file_logger=FileWriter(enabled=False,path=os.path.join(log_path,f"global_logger.txt"))
-    #memory logger (global logger for the execution)
-    memory_logger=FileWriter(enabled=False,path=os.path.join(log_path,f"memory_logger.txt"))
-    #memory logger (global logger for the execution)
-    global_time_logger=FileWriter(enabled=False,path=os.path.join(log_path,f"global_time_logger.txt"))
-    # create folder to save debug results
-    create_folder(debug_path, parents=True, exist_ok=True)
-
-    #parallel loggign
-    # 1. Setup the Queue and the File Handler
-    manager = mp.Manager()
-    log_queue = manager.Queue()
-    # Define the format and where the file goes
-    threaded_log_path = os.path.join(log_path, "parallel_run.log")
-    file_handler = logging.FileHandler(threaded_log_path)
-    formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(processName)s: %(message)s')
-    file_handler.setFormatter(formatter)
-    # 2. Start the Listener
-    # This stays in the MAIN process but runs in the background
-    listener = logging.handlers.QueueListener(log_queue, file_handler)
-    listener.start()
 
     ########## LOAD the DATFRAME with the subject ids and filenames ###############
     #csv_modified_path = os.path.join(updated_csv_paths,f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
@@ -550,7 +248,17 @@ def multi_threading_test():
     # Get all unique IDs
     all_unique_ids = df[ID_COL].unique()
     
-    my_ids=all_unique_ids[:15]
+    # Determine which IDs THIS specific Slurm task should handle
+    # Usage: sbatch --array=0-199 ... (for 200 chunks)
+    total_arrays = int(os.environ.get('SLURM_ARRAY_COUNT', 1))
+    chunk_idx = int(os.environ.get('SLURM_ARRAY_TASK_ID', 0))
+    chunk_size = len(all_unique_ids) // total_arrays
+    
+    start_idx = chunk_idx * chunk_size
+    end_idx = start_idx + chunk_size if chunk_idx < total_arrays-1 else len(all_unique_ids) #if i consider the last chinck i have to take all the remaining ids to avoid losing data
+    
+    my_ids = all_unique_ids[start_idx:end_idx]
+    print("Chunck of ids has length: ", len(my_ids))
     
     # Prepare the arguments for the multiprocessing pool
     tasks = []
@@ -560,50 +268,11 @@ def multi_threading_test():
 
     # 3. RUN MULTIPROCESSING
     cpus = int(os.environ.get('SLURM_CPUS_PER_TASK', 1))
-    print(f"Processing {len(tasks)} IDs using {cpus} CPUs")
-
-
-    # Warm-up run (to ignore initialization overhead)
-    '''with threadpool_limits(limits=1):
-        benchmark_task()'''
-    results=[]
-    runs = [1]+[cpus for cpus in range(1, 17) ] 
-    for num_cpus in runs:
-        # 1. THE "HARD" WAY (For Stubborn OpenCV/OCR)
-        # Note: This only works if the library hasn't 'locked in' yet.
-        # It's a safety net for any subprocesses your code might spawn.
-        os.environ["OMP_NUM_THREADS"] = str(num_cpus)
-        cv2.setNumThreads(num_cpus)
-
-        with threadpool_limits(limits=num_cpus, user_api='blas'):
-            start_time = perf_counter()
-            print("-"*50)
-            print(f"CPUs: {num_cpus}")
-            # --- YOUR TASK HERE ---
-            dtimes = []
-            for task in tasks:
-                start_time_id = perf_counter()
-                process_subject(*task)
-                end_time_id = perf_counter()
-                dtimes.append(end_time_id - start_time_id)
-                print(f"Time for id {task[0]}: {dtimes[-1]:.4f}s")
-            
-            end_time = perf_counter()
-            duration = end_time - start_time
-            results.append((duration,dtimes))
-            print(f"Time: {duration:.4f}s")
-    print("\n" + "="*30)
-    print("FINAL PERFORMANCE SUMMARY")
-    print("="*30)
-    reference_time = results[1][0]
-    for i,result in enumerate(results[1:]):
-        cpus=i+1
-        speedup = reference_time / result[0]
-        efficiency = (speedup / cpus) * 100
-        print(f"CPUs: {cpus:2d} | Time: {result[0]:6.2f}s | Speedup: {speedup:5.2f}x | Efficiency: {efficiency:5.1f}%")
+    print(f"Task {chunk_idx}: Processing {len(tasks)} IDs using {cpus} CPUs")
     
-    # 4. Cleanup
-    listener.stop()
+    with mp.Pool(processes=n_workers) as pool:
+        # starmap allows passing multiple arguments to the function
+        results = pool.starmap(process_subject, tasks)
 
     '''tot = 0
     for r in results:
@@ -615,229 +284,15 @@ def multi_threading_test():
     return 0
 
 
-def multi_node_test(n_ids):
-    args = parse_args()
 
-    ####### INITIALIZING PATHS #########
-    templates_path = args.templates_path
-    pdf_load_path = args.pdf_load_path
-    csv_load_path = args.csv_load_path
-    save_path = args.save_path
-    save_debug_times = args.save_debug_times
-    save_debug_images = args.save_debug_images
-    #total_arrays = args.total_arrays
-    n_workers = args.n_workers
-
-    #folder for the csv table
-    updated_csv_paths = os.path.join(save_path,"ref_pdf")
-    #folder for the global logging
-    log_path=os.path.join(save_path,'logs')
-    #folder per il debug
-    debug_path = os.path.join(save_path,'debug')
-    #load path for the pdfs
-    questionnairres_log_path=os.path.join(pdf_load_path, f"Q{QUESTIONNAIRE}")
-    #saving the censored images here
-    censored_images_path = os.path.join(save_path,'censored_images')
-
-
-    ####### CLEANING FOLDERS (only in debugging) ###########
-    '''if args.delete_previous_results:
-        if os.path.exists(updated_csv_paths):
-            remove_folder(updated_csv_paths)
-        if os.path.exists(log_path):
-            remove_folder(log_path)
-        if os.path.exists(censored_images_path):
-            remove_folder(censored_images_path)
-        if os.path.exists(debug_path):
-            remove_folder(debug_path)'''
-    
-    ########## Initializing loggers ##################
-    #console logger
-    #logger.setLevel(logging.DEBUG)
-    #logging.getLogger().setLevel(logging.DEBUG)
-
-    #file logger (global logger for the execution)
-    create_folder(log_path, parents=True, exist_ok=True)
-    file_logger=FileWriter(enabled=False,path=os.path.join(log_path,f"global_logger.txt"))
-    '''
-    #memory logger (global logger for the execution)
-    memory_logger=FileWriter(enabled=False,path=os.path.join(log_path,f"memory_logger.txt"))
-    #memory logger (global logger for the execution)
-    global_time_logger=FileWriter(enabled=False,path=os.path.join(log_path,f"global_time_logger.txt"))
-    # create folder to save debug results'''
-    create_folder(debug_path, parents=True, exist_ok=True)
-
-    '''#parallel loggign
-    # 1. Setup the Queue and the File Handler
-    manager = mp.Manager()
-    log_queue = manager.Queue()
-    # Define the format and where the file goes
-    threaded_log_path = os.path.join(log_path, "parallel_run.log")
-    file_handler = logging.FileHandler(threaded_log_path)
-    formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(processName)s: %(message)s')
-    file_handler.setFormatter(formatter)
-    # 2. Start the Listener
-    # This stays in the MAIN process but runs in the background
-    listener = logging.handlers.QueueListener(log_queue, file_handler)
-    listener.start()'''
-
-    ########## LOAD the DATFRAME with the subject ids and filenames ###############
-    #csv_modified_path = os.path.join(updated_csv_paths,f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
-    csv_modified_path = os.path.join(csv_load_path,f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
-    if os.path.exists(csv_modified_path)==False: #if the csv has not been preprocessed yet
-        df = preprocess_df(os.path.join(csv_load_path,f"ref_pdf_Q{QUESTIONNAIRE}.csv"),FILENAME_COL, ID_COL,USED_COL,WARNING_ORDERING_COL_NAME,WARNING_CENSORING_COL_NAME)
-        create_folder(updated_csv_paths, parents=True, exist_ok=True)
-        df.to_csv(csv_modified_path)
-    
-    
-    #for testing i am using used_col in the opposite way 
-    #df = load_preprocessed_df(csv_modified_path,used_col_name=USED_COL,id_col_name=ID_COL) #load the preprocessed df
-    #file_logger.write(df.head(10).to_string()) #log the first 10 lines of the df to check it is correct
-    df=pd.read_csv(csv_modified_path)
-    #select only the lines with used=False
-    df = df[df[USED_COL]==True] 
-    print(f"Total number of unique ids to process: {df[ID_COL].nunique()}")
-
-    #load the annotation files (full paths and names)
-    annotation_file_names, annotation_files = load_annotation_tree(file_logger, templates_path)
-    #i select only the template of interest (eg for Q5 only doc_5.json)
-    selected_templates = select_specific_annotation_file(QUESTIONNAIRE)
-    print("selected templates: ",selected_templates)
-
-    # I open the jsons for the selected templates and save them in a list, i also open the corresponding pre_computed data
-    # #this list is a single element for QX X>1 and two elements for X=1 
-    annotation_roots, npy_data = load_template_info(file_logger,annotation_files,annotation_file_names,
-                                                    templates_path, selected_files=selected_templates)
-    
-    pages_in_annotation = get_page_list(annotation_roots[0]) #is the same for both templates in Q1 case 
-    #so i can just take it from the first one
-    print("pages in annotations:", pages_in_annotation)
-
-    ##### PREPARE SHARED RESOURCES #############
-    shared_resources = {
-        'templates_path': templates_path,
-        'npy_data': npy_data,
-        'annotation_roots': annotation_roots,
-        'pages_in_annotation': pages_in_annotation,
-        'selected_templates': selected_templates,
-        # paths
-        'questionnairres_log_path' : questionnairres_log_path,
-        'debug_path': debug_path,
-        'censored_images_path': censored_images_path,
-        'updated_csv_paths': updated_csv_paths,
-        #args
-        'save_debug_times': save_debug_times,
-        'save_debug_images': save_debug_images,
-        'verbose': args.verbose,
-        #loggers
-        #'file_logger': file_logger,
-        #'memory_logger': memory_logger,
-        #'global_time_logger': global_time_logger,
-        # ... add all other necessary variables/objects ...
-    }
-
-    # 2. SLURM CHUNKING LOGIC
-    # Get all unique IDs
-    all_unique_ids = df[ID_COL].unique()
-    
-    my_ids=all_unique_ids[:n_ids]
-    
-    # Prepare the arguments for the multiprocessing pool
-    tasks = []
-    for uid in my_ids:
-        group = df[df[ID_COL] == uid]
-        tasks.append((uid, group, shared_resources))
-
-    # 3. RUN MULTIPROCESSING
-    cpus = int(os.environ.get('SLURM_CPUS_PER_TASK', 1))
-    print(f"Processing {len(tasks)} IDs using {cpus} CPUs")
-
-
-    # Warm-up run (to ignore initialization overhead)
-    '''with threadpool_limits(limits=1):
-        benchmark_task()'''
-    results=[]
-    tests=[4]+[1,2,4,6,8,10,12,14,16]
-    for num_cpus in tests:
-        start_time = perf_counter()
-        print("-"*50)
-        print(f"CPUs: {num_cpus}")
-        '''with mp.Pool(processes=num_cpus, initializer=worker_init, initargs=(log_queue,)) as pool:
-            # starmap allows passing multiple arguments to the function
-            parallel_results = pool.starmap(process_subject, tasks)
-            # --- YOUR TASK HERE ---'''
-        with mp.Pool(processes=num_cpus) as pool:
-            # starmap allows passing multiple arguments to the function
-            parallel_results = pool.starmap(process_subject, tasks)
-        times_per_id=[parallel_results[i][0] for i in range(len(parallel_results))]
-        end_time = perf_counter()
-        duration = end_time - start_time
-        results.append((duration,times_per_id))
-        print(f"Times per ID: {times_per_id}")
-        print(f"Time: {duration:.4f}s")
-    print("\n" + "="*30)
-    print("FINAL PERFORMANCE SUMMARY")
-    print("="*30)
-    reference_time = results[1][0]
-    for i,result in enumerate(results[1:]):
-        cpus=tests[i+1]
-        speedup = reference_time / result[0]
-        efficiency = (speedup / cpus) * 100
-        print(f"CPUs: {cpus:2d} | Time: {result[0]:6.2f}s | Speedup: {speedup:5.2f}x | Efficiency: {efficiency:5.1f}%")
-    
-    # 4. Cleanup
-    #listener.stop()
-
-    '''tot = 0
-    for r in results:
-        if r != 1:
-            print("Error in processing a subject, check the logs for details.")
-        tot+=r
-    print(f"Task {chunk_idx} completed. Successfully processed {tot}/{len(tasks)} subjects.")'''
-
-    return 0
-
-def process_wrapper(task_tuple):
-    task_id = task_tuple[0]
-    group = task_tuple[1]
-    try:
-        #compute time for the process 
-        t_0 = perf_counter()
-        # Pass the rest of the tuple to your actual function
-        result = process_subject(*task_tuple) #returns 0 if everything is ok, 1 if there is an error
-        t_end = perf_counter()
-        return {
-            "task_id": task_id,
-            "success": True,
-            "result": result,
-            "time": t_end - t_0,
-            "error": None,
-        }
-    except Exception as e:
-        return {
-            "task_id": task_id,
-            "success": False,
-            "result": group.copy(), #return the group of the subject that caused the error to facilitate debugging
-            "time": None,
-            "error": {
-                "type": type(e).__name__,
-                "message": str(e),
-                "traceback": traceback.format_exc(),
-            },
-        }
 
 def process_subject(unique_id, group, shared_resources):
-    cv2.setNumThreads(0)
-
     """
     This function processes ONE subject. 
     shared_resources: A dictionary containing templates, paths, and settings 
                       loaded once at the start of the script. 
     """
-    #print("Entered  process for id: ", unique_id, flush=True)
-    #parallel_logger = logging.getLogger("parallel_logger")
-    #parallel_logger.info(f"Started processing ID: {unique_id}")
-    #parallel_logger.debug(f"Trying to print debug data for ID: {unique_id}")
+    print("Entered  process for id: ", unique_id, flush=True)
     ######## PAGE SORTING ##############
 
     #### UNPACK shared RESOURCES ####
@@ -855,23 +310,15 @@ def process_subject(unique_id, group, shared_resources):
     save_debug_images = shared_resources['save_debug_images']
     verbose = shared_resources['verbose']
     #loggers
-    patient_file_log_path=os.path.join(censored_images_path, f"{unique_id}", QUESTIONNAIRE,'global_logger.txt')
-    create_folder(os.path.dirname(patient_file_log_path), parents=True, exist_ok=True)
-    file_logger=FileWriter(enabled=verbose,path=patient_file_log_path)
-    #file_logger = shared_resources['file_logger']
-    #global_time_logger = shared_resources['global_time_logger']
-    # memory_logger = shared_resources['memory_logger']
-
-    #INITIALIZE LOGGERS
-    patient_time_log_path=os.path.join(censored_images_path, f"{unique_id}", QUESTIONNAIRE,time_logs_name)
-    create_folder(patient_time_log_path, parents=True, exist_ok=True)
-    questionnaire_time_logger=FileWriter(save_debug_times,os.path.join(patient_time_log_path,f"questionnaire_level_time_log.txt"))
+    file_logger = shared_resources['file_logger']
+    global_time_logger = shared_resources['global_time_logger']
+    memory_logger = shared_resources['memory_logger']
 
     #### LOAD filenames for selected ID #####
     filenames = group[FILENAME_COL].tolist()
     # i sort the filenames by name (expected page ordering is absed on alphabetical ordering)
     filenames.sort()  
-    #print("filenames: ",filenames, flush=True)
+    print("filenames: ",filenames, flush=True)
     #checks both for .pdf and for .tif.pdf
     pdf_paths = get_file_paths(filenames,questionnairres_log_path,file_logger) 
     file_logger.write(filenames)
@@ -881,9 +328,7 @@ def process_subject(unique_id, group, shared_resources):
 
     #i extract the images and order them based on the expeected ordering
     #in some cases pdf_paths is a single multipage pdfs in others are multiple one page pdfs files
-    questionnaire_time_logger.call_start('process_pdfs')
     list_of_images, test_log = process_pdf_files(QUESTIONNAIRE,pdf_paths,None,save=False, test_log=test_log)
-    questionnaire_time_logger.call_end('process_pdfs')
 
     #DEBUG, remove after, disorder the pages 
     #new_order=[3,2,1,0]
@@ -895,7 +340,6 @@ def process_subject(unique_id, group, shared_resources):
     #### GET correct template for Q1 (uses phash)#####
     #i select the annotation root and npy data corresponding to the correct template 
     # #(in Q1 case i have two templates, in the other cases only one so it is straightforward)
-    questionnaire_time_logger.call_start('select_template')
     report,selected_template_index,selected_confidence, root , npy_dict = select_template(pages_in_annotation,QUESTIONNAIRE,
     annotation_roots,npy_data, list_of_images, file_logger) 
     if report:
@@ -904,10 +348,8 @@ def process_subject(unique_id, group, shared_resources):
         test_log['report_template_choice'] = copy.deepcopy(report)
     file_logger.write(selected_templates[selected_template_index])
     file_logger.write(report)
-    questionnaire_time_logger.call_end('select_template')
     
     #### DICTIONARY INITIALIZATION ####
-    questionnaire_time_logger.call_start('dictionary_initialization')
     #i should avoid to re-initialize if q1 (but i spare a negligible amount of time)
     page_dictionary,template_dictionary = initialize_sorting_dictionaries(list_of_images, root, input_from_file=False)
     #i will consider all template pages from the beginning and all images of course
@@ -918,19 +360,17 @@ def process_subject(unique_id, group, shared_resources):
                                                         root, template_dictionary)
     #DEBUG
     total_bytes = get_deep_size(template_dictionary)
-    #memory_logger.write(f"Current memory usage: {get_process_memory():.2f} MB")
-    #memory_logger.write(f"Total deep size of template_dictionary: {total_bytes/ 1024:.2f} kbytes")
-    questionnaire_time_logger.call_end('dictionary_initialization')
+    memory_logger.write(f"Current memory usage: {get_process_memory():.2f} MB")
+    memory_logger.write(f"Total deep size of template_dictionary: {total_bytes/ 1024:.2f} kbytes")
     
     ##### CHECK if PAGES MATCH expected ORDER (can choose orb or template matchign) #########
-    questionnaire_time_logger.call_start("total_sorting_time")
-    questionnaire_time_logger.call_start("page_sorting_stage_1")
+    global_time_logger.call_start("page_sorting_stage_1")
     test_passed,page_dictionary, template_dictionary, test_log, problematic_pages, problematic_templates = perform_first_stage_check(pages_to_consider, templates_to_consider, 
                                                                                                                                         page_dictionary, template_dictionary, test_log,
                                                                                                                                         file_logger, 
                                                                                                                                         method_checking=CHECKING_FIRST_STAGE,
                                                                                                                                         orb_parameters=ORB_parameters)
-    questionnaire_time_logger.call_end("page_sorting_stage_1")
+    global_time_logger.call_end("page_sorting_stage_1")
     test_log['problematic_pages_step_1'] = problematic_pages[:]
     test_log['test_passed_step_1'] = test_passed
     #DEBUG
@@ -941,18 +381,16 @@ def process_subject(unique_id, group, shared_resources):
     file_logger.write(f"problematic pages {problematic_pages}")
     file_logger.write(f"test passed: {test_passed}")
 
+    
     if not test_passed: 
-        questionnaire_time_logger.call_start("page_sorting_stage_2")
         ##### SORT PAGES (with orb or phash) AND then CHECK if PAGES MATCH expected ORDER (can choose orb or template matchign) #########
         #sort with orb matching and check if the association is correct via template matching
         #pre_load orb keypoints for images
-        questionnaire_time_logger.call_start("pre_load_image_properties_stage_2")
         page_dictionary = pre_load_image_properties(problematic_pages,page_dictionary,
                                                     template_dictionary,properties=['orb'])
-        questionnaire_time_logger.call_end("pre_load_image_properties_stage_2")
         test_passed,page_dictionary, template_dictionary, test_log, problematic_pages, problematic_templates = perform_second_stage_check(problematic_pages, problematic_templates, 
                                                                                                                                         page_dictionary, template_dictionary, test_log,
-                                                                                                                                        file_logger, questionnaire_time_logger,
+                                                                                                                                        file_logger,
                                                                                                                                         method_checking=CHECKING_SECOND_STAGE, 
                                                                                                                                         orb_parameters=ORB_parameters)
         test_log['problematic_pages_step_2'] = problematic_pages[:]
@@ -961,11 +399,9 @@ def process_subject(unique_id, group, shared_resources):
         file_logger.write(f"problematic pages step 2: {problematic_pages}")
         file_logger.write(f"test passed 2: {test_passed}")
         debug_print_associations(pages_to_consider,page_dictionary,file_logger)
-        questionnaire_time_logger.call_end("page_sorting_stage_2")
     
         if not test_passed:
             ###### SORT PAGES WITH OCR #########
-            questionnaire_time_logger.call_start("ocr_matching")
             template_dictionary, page_dictionary, report = perform_ocr_matching(problematic_pages,problematic_templates, 
                                                     page_dictionary, template_dictionary,text_similarity_metric=TEXT_SIMILARITY_METRIC, compute_report=True,
                                                     gap_threshold=GAP_THRESHOLD_OCR, max_dist=MAX_DIST_OCR)
@@ -978,12 +414,10 @@ def process_subject(unique_id, group, shared_resources):
                 #i give a warnign if the cost is over the maximum cost defined by the threshold
             test_log['report_ocr'] = copy.deepcopy(report)
             debug_print_associations(pages_to_consider,page_dictionary,file_logger)
-            questionnaire_time_logger.call_end("ocr_matching")
-    questionnaire_time_logger.call_end("total_sorting_time")
     
-    page_times = {}
     ########## PAGE CENSORING ##########
     for img_id in pages_to_consider:
+
         ### load image properties and ignore those non matched ######
         page = page_dictionary[img_id]
         matched_id = page['matched_page']
@@ -998,20 +432,17 @@ def process_subject(unique_id, group, shared_resources):
         img=page['img'] #all pages are already loaded
 
         #DEBUG
-        questionnaire_time_logger.call_start('total_time_page',block=True)
         #create time logger for the current page
-        #image_time_logger=FileWriter(save_debug_times,os.path.join(patient_time_log_path,f"page_{matched_id}.txt"))
-        #image_time_logger.call_start('total_time_page')
+        patient_time_log_path=os.path.join(censored_images_path, f"{unique_id}", QUESTIONNAIRE,time_logs_name)
+        create_folder(patient_time_log_path, parents=True, exist_ok=True)
+        image_time_logger=FileWriter(save_debug_times,os.path.join(patient_time_log_path,f"page_{matched_id}.txt"))
 
         #### DEAL WITH PAGES NOT TO CENSOR (and special questionnairres?) ###### 
         if template['type']=='N':
             file_logger.write(f"Page {img_id} considered as N, no censoring applied, saved as is")
-            save_as_is_no_censoring(file_logger,questionnaire_time_logger,img_id,page_dictionary,dest_folder=censored_images_path,
+            save_as_is_no_censoring(file_logger,image_time_logger,img_id,page_dictionary,dest_folder=censored_images_path,
                                     n_p=unique_id,n_doc=QUESTIONNAIRE,n_page=matched_id)
             test_log[img_id]['not_to_censor_ignored'] = True
-            questionnaire_time_logger.write(f"Page {matched_id} considered as N, no censoring applied, saved as is")
-            dtime = questionnaire_time_logger.call_end('total_time_page')
-            page_times[matched_id] = dtime
             continue
         
         #### load pre_computed data and boxes (and rescale them according to tempalte and image resolutions #######
@@ -1032,8 +463,7 @@ def process_subject(unique_id, group, shared_resources):
             create_folder(os.path.dirname(output_path), parents=True, exist_ok=True)
             superimpose_images(img, img2_path, output_path,file_logger)
 
-        ##### ADJUST LARGE CENSOR BOXES TO PAGE LIMITS ######
-        questionnaire_time_logger.call_start('adjust_censor_boxes_to_boundaries')
+        ##### ADJUST LARGE CENSOR BOXES TO PAGE LIMITS ###### 
         if save_debug_images:
             rescaled_censor_boxes = rescale_box_coords_given_resolutions(censor_boxes, template['template_size'], img_size)
             adjusted_censor_boxes = adjust_boundary_boxes(rescaled_censor_boxes, template['template_size'], img_size , epsilon=EPSILON_EDGE_MATCHING)
@@ -1043,7 +473,6 @@ def process_subject(unique_id, group, shared_resources):
         #i also rescale to thecorrect resolution (image scale instead of template scale)
         censor_boxes = rescale_box_coords_given_resolutions(censor_boxes, template['template_size'], img_size)
         censor_boxes = adjust_boundary_boxes(censor_boxes, template['template_size'], img_size , epsilon=EPSILON_EDGE_MATCHING)
-        questionnaire_time_logger.call_end('adjust_censor_boxes_to_boundaries')
 
         #### RESCALE BOXES based on resolution of image and template ##########
         selected_alignement_method = ALIGNEMENT_METHOD
@@ -1058,16 +487,14 @@ def process_subject(unique_id, group, shared_resources):
             censor_close_boxes = rescale_box_coords_given_resolutions(censor_close_boxes, template['template_size'], img_size)
 
         ###### COMPUTE TRANSFORMATION PARAMETERS FOR ALIGNEMENT ######
-        questionnaire_time_logger.call_start('compute_transformation_parameters')
         if test_log[img_id]['warning_ocr']:
             selected_alignement_method = 'orb_page_level_homography' #i force this method because in this case i cannot rely on align regions (were not matched)
             file_logger.write(f"Warning for page {img_id} because OCR matching confidence is low, alignement will be computed with orb_page_level_homography")
         test_log[img_id]['selected_alignement_method'] = selected_alignement_method
-        scale_factor, shift_x, shift_y, angle_degrees,reference = get_transformation_from_dictionaries(page, template, questionnaire_time_logger, 
+        scale_factor, shift_x, shift_y, angle_degrees,reference = get_transformation_from_dictionaries(page, template, image_time_logger, 
                                                                                                         scale_factor=SCALE_FACTOR_MATCHING, 
                                                                                                         method=selected_alignement_method,orb_parameters=ORB_parameters)#orb_page_level_affine
         transformation = {'reference': reference, 'scale_factor': scale_factor, 'shift_x': shift_x, 'shift_y': shift_y, 'angle_degrees': angle_degrees}
-        questionnaire_time_logger.call_end('compute_transformation_parameters')
         
         ##### CHECK THAT COMPUTED TRANSFORMATION IS GOOD ####
         if reference:
@@ -1085,10 +512,7 @@ def process_subject(unique_id, group, shared_resources):
             #in this case i censor with the extended regions because i cannot be sure of the alignement in any way
             save_censored_image(img, censor_boxes, censored_images_path,unique_id,QUESTIONNAIRE,matched_id,
                                 warning='',partial_coverage=partial_coverage,
-                                thickness_pct=THICKNESS_PCT, spacing_mult=SPACING_MULT,logger=questionnaire_time_logger)   
-            questionnaire_time_logger.write(f"Page {matched_id} considered as N, no censoring applied, saved as is")
-            dtime=questionnaire_time_logger.call_end('total_time_page')
-            page_times[matched_id] = dtime
+                                thickness_pct=THICKNESS_PCT, spacing_mult=SPACING_MULT,logger=image_time_logger)   
             continue
         #DEBUG
         #force parameters of alingement to debug
@@ -1099,35 +523,29 @@ def process_subject(unique_id, group, shared_resources):
         file_logger.write(f"Alignement parameters for page {matched_id}: {transformation}")
         if save_debug_images:
             #save_w_boxes(debug_images_w_boxes_path,unique_id,QUESTIONNAIRE,matched_id,img,root,
-                #            pre_computed,questionnaire_time_logger,which_boxes=['align','roi','censor','censor_close'], transformation=None)
+                #            pre_computed,image_time_logger,which_boxes=['align','roi','censor','censor_close'], transformation=None)
             output_path = os.path.join(debug_path, unique_id, f"{QUESTIONNAIRE}", debug_images_w_boxes_name,f"page_{matched_id}.png")
             create_folder(os.path.dirname(output_path), parents=True, exist_ok=True)
             save_w_boxes(output_path,matched_id,img,root,
-                            pre_computed,questionnaire_time_logger,which_boxes=['align','roi','censor','censor_close','transformed'], transformation=transformation)
+                            pre_computed,image_time_logger,which_boxes=['align','roi','censor','censor_close','transformed'], transformation=transformation)
 
 
         #### RESCALE CLOSE CENSOR BOXES BASED ON ALIGNEMENT OF THE ROI, for security (with orb or template matching) ######
-        questionnaire_time_logger.call_start('rescale_using_roi')
         #i need to give the rescale parameters because rescaling relies on template matching -> templates have to be resized
         rescale_x_y=(template['template_size'][0]/img_size[0], template['template_size'][1]/img_size[1]) 
         is_match, extra_shift_x, extra_shift_y, extra_scale, extra_angle = rescale_censor_with_alignement(img,img_size,align_boxes,roi_boxes,pre_computed_align,pre_computed_rois,
-                                transformation,questionnaire_time_logger,rescale_censor_with=RESCALE_CENSOR_WITH,rescale_x_y=rescale_x_y)
+                                transformation,image_time_logger,rescale_censor_with=RESCALE_CENSOR_WITH,rescale_x_y=rescale_x_y)
         extra_transformation = {'extra_shift_x': extra_shift_x, 'extra_shift_y': extra_shift_y, 'extra_scale': extra_scale, 'extra_angle': extra_angle}
         test_log[img_id]['adjust_transformation'] = copy.deepcopy(extra_transformation)
         #DEBUG
         file_logger.write(f"Alignement parameters after orb matching for page {matched_id}: shift_x: {extra_shift_x}, shift_y: {extra_shift_y}, Match: {is_match}")
-        questionnaire_time_logger.call_end('rescale_using_roi')
 
 
         ###### CENSOR IMAGES ######   
-        questionnaire_time_logger.call_start('censoring')
         test_log = censor_the_page(is_match, transformation, extra_transformation, censor_boxes, censor_close_boxes, partial_coverage, 
-                questionnaire_time_logger, save_debug_images, debug_path, 
+                image_time_logger, save_debug_images, debug_path, 
                 unique_id, QUESTIONNAIRE, matched_id, img, censored_images_path, test_log=test_log, warning_string='', debug_images_name=debug_images_name) # i don't add warning strings to pages
-        questionnaire_time_logger.call_end('censoring')
-        questionnaire_time_logger.write(f"Page {matched_id} considered as N, no censoring applied, saved as is")
-        dtime=questionnaire_time_logger.call_end('total_time_page')
-        page_times[matched_id] = dtime
+    
     #save global and page level warning
     save_warning_log(test_log, censored_images_path, unique_id, QUESTIONNAIRE)
     group = update_warning_cols(group,unique_id,test_log,pages_to_consider,id_col=ID_COL,ordering_warning_col=WARNING_ORDERING_COL_NAME,
@@ -1135,13 +553,11 @@ def process_subject(unique_id, group, shared_resources):
     
     
     # Save a partial CSV for THIS chunk
-    '''chunk_id = os.environ.get('SLURM_ARRAY_TASK_ID')
+    chunk_id = os.environ.get('SLURM_ARRAY_TASK_ID')
     output_csv = os.path.join(updated_csv_paths,partial_results_name,f"partial_results_{chunk_id}.csv")
-    create_folder(os.path.dirname(output_csv), parents=True, exist_ok=True)
-    group.to_csv(output_csv)'''
-    total_time=questionnaire_time_logger.call_end('complete_process')
+    group.to_csv(output_csv)
 
-    return group.copy()
+    return 1
 
 ########## INDIVIDUAL FUNCTIONS #################
 
@@ -1336,7 +752,7 @@ def perform_first_stage_check(pages_to_consider, templates_to_consider, page_dic
     return test_passed,page_dictionary, template_dictionary, test_log, problematic_pages, problematic_templates
 
 #probably i can make more modular by making the "check_with_template_matching" a function that can be used after phash or after orb or others ...
-def perform_second_stage_check(pages_to_consider, templates_to_consider, page_dictionary, template_dictionary, test_log,logger,time_logger,method_checking='template',method_ordering='orb',**kwargs):
+def perform_second_stage_check(pages_to_consider, templates_to_consider, page_dictionary, template_dictionary, test_log,logger,method_checking='template',method_ordering='orb',**kwargs):
     
     if method_checking == 'template':
         selected_metric = "matchTemplate"
@@ -1348,7 +764,6 @@ def perform_second_stage_check(pages_to_consider, templates_to_consider, page_di
     elif method_ordering == 'phash':
         key_to_check = 'match_phash'
 
-    time_logger.call_start(f"sorting_step_2_{method_ordering}")
     if method_ordering == 'orb':
         page_dictionary, report = perform_orb_matching(page_dictionary,template_dictionary, pages_to_consider, templates_to_consider, 
                                 gap_threshold=GAP_THRESHOLD_ORB,max_dist=MAX_DIST_ORB, orb_good_match=ORB_GOOD_MATCH,compute_report=True)
@@ -1357,7 +772,6 @@ def perform_second_stage_check(pages_to_consider, templates_to_consider, page_di
         page_dictionary, report = perform_phash_matching(page_dictionary,template_dictionary, pages_to_consider, templates_to_consider, 
                             gap_threshold=GAP_THRESHOLD_PHASH,max_dist=MAX_DIST_PHASH, compute_report=True)
         test_log['report_sorting_step_2'] = copy.deepcopy(report)
-    time_logger.call_end(f"sorting_step_2_{method_ordering}")
 
     #i test if the pages are already in place
     pairs_to_consider = []
@@ -1366,11 +780,11 @@ def perform_second_stage_check(pages_to_consider, templates_to_consider, page_di
         #print(orb_matched_id)
         pairs_to_consider.append([img_id,orb_matched_id])
 
-    time_logger.call_start(f"checking_step_2_{selected_metric}")
     #perform template_matching and update the matching keys in the dictionaries
     page_dictionary,template_dictionary = perform_template_matching(pairs_to_consider,page_dictionary,template_dictionary, 
                                 n_align_regions=N_ALIGN_REGIONS,scale_factor=SCALE_FACTOR_MATCHING,
                                 matching_threshold=MATCHING_THRESHOLD, compute_report=True,metric=selected_metric,**kwargs)
+    
     problematic_pages = pages_to_consider[:]
     problematic_templates = templates_to_consider[:]
     n_matches=0
@@ -1391,7 +805,6 @@ def perform_second_stage_check(pages_to_consider, templates_to_consider, page_di
     test_passed=False
     if n_matches==len(pairs_to_consider):
         test_passed=True
-    time_logger.call_end(f"checking_step_2_{selected_metric}")
     
     return test_passed,page_dictionary, template_dictionary, test_log, problematic_pages, problematic_templates
 
@@ -1602,32 +1015,6 @@ def censor_the_page(is_match, transformation, extra_transformation, censor_boxes
     return test_log
 
 #### Debug ####
-
-def logger_init(log_path):
-    """The 'Listener' that stays in the main process area."""
-    root = logging.getLogger()
-    # Clean existing handlers to avoid duplicates
-    for h in root.handlers[:]: root.removeHandler(h)
-    
-    h = logging.FileHandler(log_path)
-    fmt = logging.Formatter('%(asctime)s [%(levelname)s] %(processName)s [%(name)s]: %(message)s')
-    h.setFormatter(fmt)
-    root.addHandler(h)
-    root.setLevel(logging.DEBUG)
-
-    # This loop keeps the listener alive until it receives 'None'
-    # Use this if you aren't using the 'logging.handlers.QueueListener' class
-    # But for simplicity, we'll use the QueueListener class below.
-
-def worker_init(queue):
-    root = logging.getLogger()
-    root.handlers = [] # Clear existing handlers
-    
-    # Direct everything to the queue
-    handler = logging.handlers.QueueHandler(queue)
-    root.addHandler(handler)
-    root.setLevel(logging.DEBUG)
-
 def save_list_of_images(list_of_images, debug_images_original,folder_name, unique_id, verbose):
     if not verbose:
         return 0
@@ -1717,11 +1104,6 @@ def update_warning_cols(df,unique_id,test_log,pages_to_consider,id_col,ordering_
         censoring_warning = f'pages censored with large boxes:   {n_warnings}/{len(pages_to_consider)}'
     else:
         censoring_warning = 'No warning'
-    # Ensure the warning column is capable of holding strings
-    if ordering_warning_col in df.columns:
-        df[ordering_warning_col] = df[ordering_warning_col].astype(object)
-    if censoring_warning_col in df.columns:
-        df[censoring_warning_col] = df[censoring_warning_col].astype(object)
     df.loc[df[id_col] == unique_id, ordering_warning_col] = ordering_warning
     df.loc[df[id_col] == unique_id, censoring_warning_col] = censoring_warning
     return df
@@ -1751,21 +1133,6 @@ def get_deep_size(obj, seen=None):
         
     return size
 
-
-def set_threads(n):
-    n_str = str(n)
-    # The "Big Five" for Math/Image libraries
-    os.environ["OMP_NUM_THREADS"] = n_str
-    os.environ["MKL_NUM_THREADS"] = n_str
-    os.environ["OPENBLAS_NUM_THREADS"] = n_str
-    os.environ["VECLIB_MAXIMUM_THREADS"] = n_str
-    os.environ["NUMEXPR_NUM_THREADS"] = n_str
-    # Specifically for OpenCV if it's compiled with TBB
-    try:
-        import cv2
-        cv2.setNumThreads(n)
-    except ImportError:
-        pass
 ######### PARSING #####################
 def parse_args():
     """Handle command-line arguments."""
@@ -1831,26 +1198,4 @@ def parse_args():
     return parser.parse_args()
 
 if __name__ == "__main__":
-    main(test_size=50,chunk_size_mp=10,timeout_lim=120)
-    #multi_threading_test()
-    #multi_node_test(90)
-    # A huge matrix multiplication that takes ~5-10 seconds
-    '''N = 10000
-    A = np.random.rand(N, N).astype('float64')
-    B = np.random.rand(N, N).astype('float64')
-
-    print("Starting 16-core burst...")
-    with threadpool_limits(limits=16):
-        start = perf_counter()
-        _ = A @ B  # This should make 16 bars in htop go bright green
-        print(f"Done in {perf_counter() - start:.2f}s")
-    print("Starting 8-core burst...")
-    with threadpool_limits(limits=8):
-        start = perf_counter()
-        _ = A @ B  # This should make 16 bars in htop go bright green
-        print(f"Done in {perf_counter() - start:.2f}s")
-    print("Starting 2-core burst...")
-    with threadpool_limits(limits=2):
-        start = perf_counter()
-        _ = A @ B  # This should make 16 bars in htop go bright green
-        print(f"Done in {perf_counter() - start:.2f}s")'''
+    main()

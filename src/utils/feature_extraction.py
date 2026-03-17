@@ -737,7 +737,7 @@ def fill_polygon_striped_relative(
     pts: np.ndarray, 
     thickness_pct: float = 0.1, 
     spacing_mult: float = 0.5,
-    color=(0, 0, 0)
+    color=(0, 0, 0),**kwargs
 ):
     """
     Fills a polygon (ASSUMED TO BE A ROTATED RECTANGLE) with parallel stripes 
@@ -798,10 +798,19 @@ def fill_polygon_striped_relative(
         
     # 3. Calculate Stripe Parameters
     
-    # The thickness is calculated relative to the coverage dimension
-    thickness = max(1, int(stripe_coverage_dim * thickness_pct))
-    gap = max(1, int(thickness * spacing_mult))
-    step = thickness + gap
+    if 'page_w' in kwargs and 'page_frac' in kwargs and 'area_frac' in kwargs :
+        page_w=kwargs.get('page_w')
+        page_frac=kwargs.get('page_frac')
+        frac_area=kwargs.get('area_frac')
+        block_w = (1/(1-frac_area))*(page_w*page_frac) #the width of the block that would cover the desired fraction of the page
+
+        step = block_w
+        thickness = block_w * frac_area #the thickness of the black stripe 
+    else:
+        # The thickness is calculated relative to the coverage dimension
+        thickness = max(1, int(stripe_coverage_dim * thickness_pct))
+        gap = max(1, int(thickness * spacing_mult))
+        step = thickness + gap
 
     # Total number of stripes needed to cover the dimension
     num_steps = int(np.ceil(stripe_coverage_dim / step))
@@ -814,6 +823,11 @@ def fill_polygon_striped_relative(
         # Calculate the position along the coverage dimension's axis (from -half_coverage_dim to +half_coverage_dim)
         # Start position is -half_coverage_dim + offset to the center of the first stripe
         current_pos = -half_coverage_dim + i * step + thickness / 2.0
+
+        thickness_temp=0
+        if current_pos > half_coverage_dim - thickness / 2.0 and i>0:
+            thickness_temp = (half_coverage_dim  - (-half_coverage_dim + i * step)) #(xlim - last white border) 
+            current_pos = half_coverage_dim - thickness_temp / 2.0
         
         # Calculate the transformation vector (dx, dy) for the offset from the main center
         # The rotation direction is determined by the final_angle
@@ -826,12 +840,19 @@ def fill_polygon_striped_relative(
         
         # Stripe rectangle definition: (center, size, angle)
         # Size is (thickness, full length)
-        stripe_rect = (
-            stripe_center, 
-            (thickness, stripe_length), 
-            angle
-        )
-        
+        if thickness_temp>0:
+            stripe_rect = (
+                stripe_center, 
+                (thickness_temp, stripe_length), 
+                angle
+            )
+        else:
+            stripe_rect = (
+                stripe_center, 
+                (thickness, stripe_length), 
+                angle
+            )
+            
         # Get the four vertices of the rotated stripe rectangle
         stripe_pts = cv2.boxPoints(stripe_rect)
         stripe_pts = np.int32(stripe_pts)
@@ -867,13 +888,10 @@ def censor_image(img: ModeImage, roi_boxes, verbose: bool = False, partial_cover
             cv2.fillPoly(censored_img, [pts], color=(0, 0, 0))
             logger and logger.call_end(f'fill_region')
         else:
-            thickness_pct=kwargs.get('thickness_pct',0.1)
-            spacing_mult=kwargs.get('spacing_mult',0.5)
             logger and logger.call_start(f'fill_striped_region')
             fill_polygon_striped_relative(
                 censored_img, pts,
-                thickness_pct=thickness_pct,
-                spacing_mult=spacing_mult
+                **kwargs
             )
             logger and logger.call_end(f'fill_striped_region')
 
@@ -929,14 +947,10 @@ def censor_image_with_boundary(img: ModeImage, roi_boxes, boundary_boxes, logger
             img_roi = censored_img[y1:y2, x1:x2] #this actually modifies the censored_img since img_roi is a view
         else:
             #print("Sono entrato !")
-            thickness_pct=kwargs.get('thickness_pct',0.1)
-            spacing_mult=kwargs.get('spacing_mult',0.5)
             logger and logger.call_start(f'fill_striped_region')
             fill_polygon_striped_relative(
                 mask_roi, local_poly.astype(np.int32),
-                thickness_pct=thickness_pct,
-                spacing_mult=spacing_mult,
-                color = [255]
+                color = [255],**kwargs
             )
             img_roi = censored_img[y1:y2, x1:x2] #this actually modifies the censored_img since img_roi is a view
             logger and logger.call_end(f'fill_striped_region')

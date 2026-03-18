@@ -58,10 +58,10 @@ from src.utils.logging import FileWriter, initialize_logger
 )
 logger = logging.getLogger(__name__)'''
 
-PDF_LOAD_PATH= "/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization" #"//smb-recherche-s1.prod-powerscale.intra.igr.fr/E34N_HANDWRITING$\\Fichiers"#additional"#100263_template"
-CSV_LOAD_PATH= "/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization/ref_pdf"# "//smb-recherche-s1.prod-powerscale.intra.igr.fr/E34N_HANDWRITING$\\ref_pdf_Qx"#additional"#100263_template"
+PDF_LOAD_PATH= "/mnt/beegfs01/scratch/a_morelli/datasets/pdfs"#"/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization" 
+CSV_LOAD_PATH= "/mnt/beegfs01/scratch/a_morelli/datasets/pdfs/ref_pdf_Qx" #"/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization/ref_pdf"# "//smb-recherche-s1.prod-powerscale.intra.igr.fr/E34N_HANDWRITING$\\ref_pdf_Qx"#additional"#100263_template"
 TEMPLATES_PATH="/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization/current_template" #"//vms-e34n-databr/2025-handwriting\\data\\annotations\current_template"#additional"#100263_template"
-SAVE_PATH= "/mnt/beegfs01/scratch/a_morelli/test_parallel_censoring" #"//vms-e34n-databr/2025-handwriting\\data\\test_censoring_pipeline"#additional"#100263_template" 
+SAVE_PATH= "/mnt/beegfs01/scratch/a_morelli/parallel_censoring" #"/mnt/beegfs01/scratch/a_morelli/test_parallel_censoring" #"//vms-e34n-databr/2025-handwriting\\data\\test_censoring_pipeline"#additional"#100263_template" 
 
 #names for debug subfolders
 debug_images_name='debug_images\\'
@@ -80,7 +80,7 @@ template_images_path = "/home/a_morelli/temporary_data/test_parallel_censoring/t
 #TOTAL_TASKS = 100  # Total items to process
 
 # other variables
-QUESTIONNAIRE = "5"
+QUESTIONNAIRE = "13"
 ID_COL = 'e3n_id_hand'
 FILENAME_COL = 'object_name'
 #SAVE_ANNOTATED_TEMPLATES=True
@@ -198,8 +198,8 @@ def main(test_size=-1,timeout_lim=120,test=False):
     create_folder(debug_path, parents=True, exist_ok=True)
 
     ########## LOAD the DATFRAME with the subject ids and filenames ###############
-    #csv_modified_path = os.path.join(updated_csv_paths,f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
-    csv_modified_path = os.path.join(csv_load_path,f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
+    csv_modified_path = os.path.join(updated_csv_paths,f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
+    #csv_modified_path = os.path.join(csv_load_path,f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
     if os.path.exists(csv_modified_path)==False: #if the csv has not been preprocessed yet
         df = preprocess_df(os.path.join(csv_load_path,f"ref_pdf_Q{QUESTIONNAIRE}.csv"),FILENAME_COL, ID_COL,USED_COL,WARNING_ORDERING_COL_NAME,WARNING_CENSORING_COL_NAME)
         create_folder(updated_csv_paths, parents=True, exist_ok=True)
@@ -211,7 +211,7 @@ def main(test_size=-1,timeout_lim=120,test=False):
     #file_logger.write(df.head(10).to_string()) #log the first 10 lines of the df to check it is correct
     df=pd.read_csv(csv_modified_path)
     #select only the lines with used=False
-    df = df[df[USED_COL]==True] 
+    df = df[df[USED_COL]==False] 
     print(f"Total number of unique ids to process: {df[ID_COL].nunique()}")
 
     #load the annotation files (full paths and names)
@@ -251,6 +251,7 @@ def main(test_size=-1,timeout_lim=120,test=False):
     # Get all unique IDs
     all_unique_ids = df[ID_COL].unique()
     
+    #debug
     all_unique_ids=all_unique_ids[:test_size]
 
     # Determine which IDs THIS specific Slurm task should handle
@@ -465,7 +466,9 @@ def main(test_size=-1,timeout_lim=120,test=False):
     #for each unique_id that wa succesfully completed print the execution time
     successful_tasks = final_df[final_df['status']=='success']
     for i, row in successful_tasks.iterrows():
-        print(f"Result for task {row[ID_COL]}: {row['time']:.2f} seconds")
+        print(f"Result for task {row[ID_COL]}: {row['time']:.2f} seconds, status: {row['status']}, error: {row['error']}")
+    for i, row in final_df.iterrows():
+        print(f"Result for task {row[ID_COL]}: {row['time']:.2f} seconds, status: {row['status']}, error: {row['error']}")
 
     return {
         "completed_task_ids": completed_task_ids,
@@ -1315,8 +1318,11 @@ def process_subject(unique_id, group, shared_resources):
     save_debug_times = shared_resources['save_debug_times']
     save_debug_images = shared_resources['save_debug_images']
     verbose = shared_resources['verbose']
+
+    #save path
+    results_for_id_save_path = os.path.join(censored_images_path, QUESTIONNAIRE, f"{unique_id}")
     #loggers
-    patient_file_log_path=os.path.join(censored_images_path, f"{unique_id}", QUESTIONNAIRE,'global_logger.txt')
+    patient_file_log_path=os.path.join(results_for_id_save_path,'global_logger.txt')
     create_folder(os.path.dirname(patient_file_log_path), parents=True, exist_ok=True)
     file_logger=FileWriter(enabled=verbose,path=patient_file_log_path)
     #file_logger = shared_resources['file_logger']
@@ -1324,7 +1330,7 @@ def process_subject(unique_id, group, shared_resources):
     # memory_logger = shared_resources['memory_logger']
 
     #INITIALIZE LOGGERS
-    patient_time_log_path=os.path.join(censored_images_path, f"{unique_id}", QUESTIONNAIRE,time_logs_name)
+    patient_time_log_path=os.path.join(results_for_id_save_path,time_logs_name)
     create_folder(patient_time_log_path, parents=True, exist_ok=True)
     questionnaire_time_logger=FileWriter(save_debug_times,os.path.join(patient_time_log_path,f"questionnaire_level_time_log.txt"))
 
@@ -1444,7 +1450,7 @@ def process_subject(unique_id, group, shared_resources):
     questionnaire_time_logger.call_end("total_sorting_time")
     
     page_times = {}
-    partial_boxes_coords_path = initialize_csv(censored_images_path,unique_id, QUESTIONNAIRE)
+    partial_boxes_coords_path = initialize_csv(results_for_id_save_path)
     ########## PAGE CENSORING ##########
     for img_id in pages_to_consider:
         ### load image properties and ignore those non matched ######
@@ -1474,8 +1480,7 @@ def process_subject(unique_id, group, shared_resources):
         #### DEAL WITH PAGES NOT TO CENSOR (and special questionnairres?) ###### 
         if template['type']=='N':
             file_logger.write(f"Page {img_id} considered as N, no censoring applied, saved as is")
-            save_as_is_no_censoring(file_logger,questionnaire_time_logger,img_id,page_dictionary,dest_folder=censored_images_path,
-                                    n_p=unique_id,n_doc=QUESTIONNAIRE,n_page=matched_id)
+            save_as_is_no_censoring(file_logger,questionnaire_time_logger,img_id,page_dictionary,dest_folder=results_for_id_save_path,n_page=matched_id)
             test_log[img_id]['not_to_censor_ignored'] = True
             questionnaire_time_logger.write(f"Page {matched_id} considered as N, no censoring applied, saved as is")
             dtime = questionnaire_time_logger.call_end('total_time_page')
@@ -1551,7 +1556,7 @@ def process_subject(unique_id, group, shared_resources):
             test_log[img_id]['censored_with_large_boxes'] = True
             #censor_boxes,partial_coverage = get_censor_boxes(root,matched_id) #we need to refer to the correct id of the template
             #in this case i censor with the extended regions because i cannot be sure of the alignement in any way
-            save_censored_image(img, censor_boxes, censored_images_path,unique_id,QUESTIONNAIRE,matched_id,
+            save_censored_image(img, censor_boxes, results_for_id_save_path,matched_id,
                                 warning='',partial_coverage=partial_coverage,
                                 thickness_pct=THICKNESS_PCT, spacing_mult=SPACING_MULT,logger=questionnaire_time_logger,
                                 page_w=img_size[0],page_frac=PAGE_FRAC,area_frac=AREA_FRAC)   
@@ -1593,14 +1598,14 @@ def process_subject(unique_id, group, shared_resources):
         questionnaire_time_logger.call_start('censoring')
         test_log = censor_the_page(is_match, transformation, extra_transformation, censor_boxes, censor_close_boxes, partial_coverage, 
                 questionnaire_time_logger, save_debug_images, debug_path, 
-                unique_id, QUESTIONNAIRE, matched_id, img, censored_images_path, test_log=test_log, warning_string='', debug_images_name=debug_images_name, 
+                unique_id, QUESTIONNAIRE, matched_id, img, results_for_id_save_path, test_log=test_log, warning_string='', debug_images_name=debug_images_name, 
                 page_w=img_size[0],page_frac=PAGE_FRAC,area_frac=AREA_FRAC, partial_boxes_coords_path = partial_boxes_coords_path) # i don't add warning strings to pages
         questionnaire_time_logger.call_end('censoring')
         questionnaire_time_logger.write(f"Page {matched_id} considered as N, no censoring applied, saved as is")
         dtime=questionnaire_time_logger.call_end('total_time_page')
         page_times[matched_id] = dtime
     #save global and page level warning
-    save_warning_log(test_log, censored_images_path, unique_id, QUESTIONNAIRE)
+    save_warning_log(test_log, results_for_id_save_path)
     group = update_warning_cols(group,unique_id,test_log,pages_to_consider,id_col=ID_COL,ordering_warning_col=WARNING_ORDERING_COL_NAME,
                                 censoring_warning_col=WARNING_CENSORING_COL_NAME)
     
@@ -2056,8 +2061,7 @@ def censor_the_page(is_match, transformation, extra_transformation, censor_boxes
         
 
         # apply censoring considering the boundary boxes and the close censor boxes
-        save_censored_images_path=os.path.join(censored_images_path, f"{unique_id}", 
-                                                f"{QUESTIONNAIRE}",f"censored_page_w{warning_string}_{matched_id}.png")#, f"censored_page_{n_page}.png")
+        save_censored_images_path=os.path.join(censored_images_path,f"censored_page_w{warning_string}_{matched_id}.png")#, f"censored_page_{n_page}.png")
         create_folder(os.path.dirname(save_censored_images_path), parents=True, exist_ok=True)
         censored_img = censor_image_with_boundary(img, censor_close_boxes_orb, censor_boxes, 
                                                 partial_coverage=partial_coverage,logger=image_time_logger,
@@ -2070,15 +2074,15 @@ def censor_the_page(is_match, transformation, extra_transformation, censor_boxes
     else:
         test_log['censored_with_large_boxes']=True
         # i censor considering the large regions
-        save_censored_image(img, censor_boxes, censored_images_path,unique_id,QUESTIONNAIRE,matched_id,
+        save_censored_image(img, censor_boxes, censored_images_path,matched_id,
                             warning=warning_string,partial_coverage=partial_coverage,
                             thickness_pct=THICKNESS_PCT, spacing_mult=SPACING_MULT,logger=image_time_logger,**kwargs) 
         save_partial_regions_to_csv(censor_boxes,partial_coverage, matched_id, partial_boxes_coords_path)
     return test_log
 
-def initialize_csv(save_path,unique_id, questionnaire):
+def initialize_csv(save_path):
     """Creates the file and writes the header."""
-    filepath = os.path.join(save_path, f"{unique_id}", f"{questionnaire}", "partial_boxes_coords.csv")
+    filepath = os.path.join(save_path, "partial_boxes_coords.csv")
     create_folder(os.path.dirname(filepath), parents=True, exist_ok=True)
     with open(filepath, 'w', newline='') as f:
         writer = csv.writer(f)
@@ -2207,10 +2211,9 @@ def initialize_warning_log(pages_in_annotation):
             }
         return test_log
 
-def save_warning_log(test_log, save_path, unique_id, questionnaire):
-    log_path = os.path.join(save_path, f"{unique_id}", f"{questionnaire}")
-    create_folder(log_path, parents=True, exist_ok=True)
-    log_file_path = os.path.join(log_path, "warning_log.txt")
+def save_warning_log(test_log, save_path):
+    create_folder(save_path, parents=True, exist_ok=True)
+    log_file_path = os.path.join(save_path, "warning_log.txt")
     with open(log_file_path, 'w', encoding='utf-8') as f:
         for key, value in test_log.items():
             if isinstance(key, int):
@@ -2355,7 +2358,7 @@ def parse_args():
     return parser.parse_args()
 
 if __name__ == "__main__":
-    main(test_size=100,timeout_lim=180,test=False)
+    main(test_size=100,timeout_lim=60,test=False)
     #multi_threading_test()
     #multi_node_test(90)
     # A huge matrix multiplication that takes ~5-10 seconds

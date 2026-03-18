@@ -3,11 +3,11 @@
 #SBATCH --nodes=1                     # 1 Node per array task
 #SBATCH --ntasks=1                    # 1 task per array job
 #SBATCH --cpus-per-task=14           # Use 2xnum_workers+2 CPUs per node
-#SBATCH --mem=8G                     # Request enough RAM for 16 parallel processes
+#SBATCH --mem=24G                     # Request enough RAM for 16 parallel processes
 #SBATCH --time=00:10:00               # Estimated time for 500 images
 #SBATCH --partition=shortq
-#SBATCH --output=/mnt/beegfs01/scratch/a_morelli/test_parallel_censoring/logs/slurm/job_%A_%a.out
-#SBATCH --error=/mnt/beegfs01/scratch/a_morelli/test_parallel_censoring/logs/slurm/job_%A_%a.err
+#SBATCH --output=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/logs/slurm/job_%A_%a.out
+#SBATCH --error=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/logs/slurm/job_%A_%a.err
 
 # 1. Load necessary modules (this varies by cluster)
 # module load python/3.10

@@ -30,7 +30,7 @@ from src.utils.matching_utils import perform_phash_matching, perform_ocr_matchin
 
 
 
-def save_as_is_no_censoring(logger,image_time_logger,img_id,page_dictionary,dest_folder,n_p,n_doc,n_page):
+def save_as_is_no_censoring(logger,image_time_logger,img_id,page_dictionary,dest_folder,n_page):
     page=page_dictionary[img_id]
     img_name = page['img_name']
     img_size = page['img_size']
@@ -41,9 +41,8 @@ def save_as_is_no_censoring(logger,image_time_logger,img_id,page_dictionary,dest
     image_time_logger.call_start('copy_image')
 
     # Build the destination file path
-    dest_path = os.path.join(dest_folder, str(n_p), str(n_doc))
-    create_folder(dest_path, parents=True, exist_ok=True)
-    save_path=os.path.join(dest_path, f"page_{n_page}.png")
+    create_folder(dest_folder, parents=True, exist_ok=True)
+    save_path=os.path.join(dest_folder, f"page_{n_page}.png")
 
     if img is not None:
         cv2.imwrite(save_path, img)
@@ -161,10 +160,9 @@ def enlarge_censor_regions(image_time_logger,img_size,scale_factor,censor_boxes)
     image_time_logger.call_end(f'enlarge_{len(censor_boxes)}_censor_regions')
     return new_censor_boxes
 
-def save_censored_image(img, censor_boxes, save_path,n_p,n_doc,n_page,warning='00', verbose=False,partial_coverage=None,logger=None,**kwargs):
-    parent_path=os.path.join(save_path, f"{n_p}", f"{n_doc}")#, f"censored_page_{n_page}.png")
-    create_folder(parent_path, parents=True, exist_ok=True)
-    save_path=os.path.join(parent_path, f"censored_page_w{warning}_{n_page}.png")
+def save_censored_image(img, censor_boxes, save_path,n_page,warning='00', verbose=False,partial_coverage=None,logger=None,**kwargs):
+    create_folder(save_path, parents=True, exist_ok=True)
+    save_path=os.path.join(save_path, f"censored_page_w{warning}_{n_page}.png")
     censored_img = censor_image(img, censor_boxes, verbose=verbose,partial_coverage=partial_coverage,logger=logger,**kwargs)
     logger and logger.call_start(f'writing_to_memory')
     cv2.imwrite(str(save_path), censored_img)

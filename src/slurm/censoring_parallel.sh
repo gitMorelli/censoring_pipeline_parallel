@@ -1,13 +1,13 @@
 #!/bin/bash
-#SBATCH --job-name=censoring_parallel_test
+#SBATCH --job-name=censoring_parallel_q13
 #SBATCH --array=0-99%20              # Divide IDs into chunks; limit the number of parallel arrays to 20
 #SBATCH --nodes=1                     # 1 Node per array task
-#SBATCH --cpus-per-task=14           # Use 2xnum_workers+2 CPUs per node
-#SBATCH --mem=8G                     # Request enough RAM for 16 parallel processes
-#SBATCH --time=00:10:00               # Estimated time for 500 images
+#SBATCH --cpus-per-task=16           # Use 2xnum_workers+2 CPUs per node
+#SBATCH --mem=48G                     # Request enough RAM for 16 parallel processes
+#SBATCH --time=00:45:00               # Estimated time for 500 images
 #SBATCH --partition=shortq
-#SBATCH --output=/mnt/beegfs01/scratch/a_morelli/test_parallel_censoring/logs/slurm/job_%A_%a.out
-#SBATCH --error=/mnt/beegfs01/scratch/a_morelli/test_parallel_censoring/logs/slurm/job_%A_%a.err
+#SBATCH --output=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/logs/slurm/job_%A_%a.out
+#SBATCH --error=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/logs/slurm/job_%A_%a.err
 
 # Set SLURM_ARRAY_COUNT manually if not provided by your version of Slurm
 export SLURM_ARRAY_COUNT=100
@@ -30,5 +30,4 @@ cd $PROJECT_ROOT
 
 # 2. Run using the -m flag (No .py extension, use dots for path)
 $ENV_PYTHON -m src.scripts.censoring_parallel \
-    --save_debug_times \
     --n_workers 12

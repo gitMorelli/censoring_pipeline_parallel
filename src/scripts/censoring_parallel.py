@@ -326,7 +326,8 @@ def main(test_size=-1,timeout_lim=120,test=False):
                 "task_id": task[0],
                 "submitted_at": time.monotonic(),
             }
-
+    total_tasks = len(tasks)
+    last_reported = 0 # To avoid spamming the same number
     try:
         submit_until_full()
 
@@ -419,6 +420,11 @@ def main(test_size=-1,timeout_lim=120,test=False):
             # 5. Top up the pool
             submit_until_full()
 
+            current_done = len(completed_task_ids)
+            if current_done > last_reported:
+                print(f"Progress: {current_done}/{total_tasks} ({(current_done/total_tasks)*100:.1f}%)")
+                last_reported = current_done
+
             # 6. Avoid busy waiting
             if active_jobs:
                 time.sleep(poll_interval)
@@ -458,7 +464,7 @@ def main(test_size=-1,timeout_lim=120,test=False):
         print("\nExpected statuses subset:", expected_statuses)
         print("Found statuses:", found_statuses)
         return 
-    #open the csv and print a summary of the results
+    '''#open the csv and print a summary of the results
     final_df = pd.read_csv(ref_Qx_updated_path)
     #print the number of failed and timed out tasks
     print("Summary of results:")
@@ -473,7 +479,8 @@ def main(test_size=-1,timeout_lim=120,test=False):
     return {
         "completed_task_ids": completed_task_ids,
         "timed_out_task_ids": timed_out_task_ids,
-    }
+    }'''
+    return
 
 def append_result_row(results_buffer, sub_df, headers):
     sub_df = sub_df.copy()
@@ -2358,7 +2365,7 @@ def parse_args():
     return parser.parse_args()
 
 if __name__ == "__main__":
-    main(test_size=100,timeout_lim=60,test=False)
+    main(test_size=-1,timeout_lim=180,test=False)
     #multi_threading_test()
     #multi_node_test(90)
     # A huge matrix multiplication that takes ~5-10 seconds

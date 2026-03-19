@@ -252,7 +252,9 @@ def main(test_size=-1,timeout_lim=120,test=False):
     all_unique_ids = df[ID_COL].unique()
     
     #debug
-    all_unique_ids=all_unique_ids[:test_size]
+    if test_size > 0:
+        all_unique_ids=all_unique_ids[:test_size]
+    print(f"Total unique IDs after test size limit: {len(all_unique_ids)}")
 
     # Determine which IDs THIS specific Slurm task should handle
     # Usage: sbatch --array=0-199 ... (for 200 chunks)
@@ -377,7 +379,8 @@ def main(test_size=-1,timeout_lim=120,test=False):
                     f"[Timeout] {len(timed_out)} task(s) exceeded {timeout_lim}s. "
                     "Terminating pool and resubmitting unfinished work."
                 )
-
+                ids_to_show = [meta["task_id"] for _, meta in timed_out]
+                print(f"-> Timed out task IDs: {ids_to_show}")
                 # Mark timed-out tasks as timed out
                 timed_out_ids_this_round = set()
                 for async_result, meta in timed_out:

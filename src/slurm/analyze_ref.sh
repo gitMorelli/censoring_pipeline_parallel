@@ -1,13 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=update_ref 
+#SBATCH --job-name=analyze_ref 
 #SBATCH --nodes=1                    
 #SBATCH --ntasks=1                    # Run a single task
 #SBATCH --cpus-per-task=2           
 #SBATCH --mem=2G                     
 #SBATCH --time=00:02:00               
 #SBATCH --partition=shortq
-#SBATCH --output=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf_backup/job_%A.out
-#SBATCH --error=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf_backup/job_%A.err
+#SBATCH --output=analyze_ref.log
 
 # Set SLURM_ARRAY_COUNT manually if not provided by your version of Slurm
 
@@ -28,4 +27,4 @@ export KMP_DUPLICATE_LIB_OK=TRUE
 cd $PROJECT_ROOT
 
 # 2. Run using the -m flag (No .py extension, use dots for path)
-$ENV_PYTHON -m src.scripts.update_ref 
+$ENV_PYTHON -m src.scripts.analyze_ref 

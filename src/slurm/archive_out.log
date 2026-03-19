@@ -1,0 +1,18 @@
+tar: Removing leading `/' from member names
+slurmstepd: error: *** JOB 3655734 ON n17 CANCELLED AT 2026-03-19T15:43:19 ***
+
+----------------------------------------------
+|                SLURM EPILOG                |
+----------------------------------------------
+Job ID: 3655734
+Cluster: flamingo
+User/Group: a_morelli/gs_hpc_u1018
+Nodelist: n17
+Cores: 1
+Job started at: 2026-03-19 15:14:01
+Job ended at:   2026-03-19 15:43:19
+Job Wall-clock time: 00:29:18
+CPU Utilized: 00:00:06
+CPU Efficiency: 0.34% of 00:29:18 core-walltime
+Memory Utilized: 4.38 MB
+Memory Efficiency: 0.11% of 4.00 GB

@@ -134,7 +134,7 @@ def process_pdf_files(n_quest,pdf_files,save_path, save=True, test_log = {}):
             sub_folder_name=get_basename(pdf_file,remove_extension=True)
             doc_path = os.path.join(save_path, sub_folder_name)
             create_folder(doc_path, parents=True, exist_ok=True)
-        for j in range(already_extracted_pages):
+        for j in range(min(already_extracted_pages,int(2*expected_pages))): #i put a limit of 2*expected_pages to avoid extracting too many pages (eg i have a case with 40 pages..)
 
             if expected_order=="alphabetical":
                 page_index = j

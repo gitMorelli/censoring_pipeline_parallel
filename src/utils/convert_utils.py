@@ -67,7 +67,8 @@ def save_as_is(pdf_path,i,out_path, return_image = False):
             # Convert bytes to a numpy array
             nparr = np.frombuffer(image_bytes, np.uint8)
             # Decode the array into an OpenCV image (BGR format)
-            cv_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            #cv_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            cv_img = cv2.imdecode(nparr, cv2.IMREAD_UNCHANGED)
             return cv_img
         else:
             out_path = out_path+f".{ext}"

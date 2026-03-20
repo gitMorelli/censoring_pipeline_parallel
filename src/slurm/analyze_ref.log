@@ -2,21 +2,23 @@ First 10 unique ids:  <StringArray>
 ['A0A0D6X7', 'A0A0F4U8', 'A0A0K5N8', 'A0A0N5F6', 'A0A0P0P8', 'A0A0U4X1',
  'A0A0Z0Y6', 'A0A1B1H5', 'A0A1D8V5', 'A0A1E3A1']
 Length: 10, dtype: str
-Number of unique ids that start with A0A: 69 out of 46024 total unique ids
+69 ids start with A0A
+48 ids start with 0B
+61 ids start with 0C
 
 ----------------------------------------------
 |                SLURM EPILOG                |
 ----------------------------------------------
-Job ID: 3656471
+Job ID: 3664417
 Cluster: flamingo
 User/Group: a_morelli/gs_hpc_u1018
-Nodelist: n04
+Nodelist: n23
 Nodes: 1
 Cores per node: 2
-Job started at: 2026-03-19 16:22:08
-Job ended at:   2026-03-19 16:22:09
+Job started at: 2026-03-20 10:41:52
+Job ended at:   2026-03-20 10:41:53
 Job Wall-clock time: 00:00:01
 CPU Utilized: 00:00:01
 CPU Efficiency: 50.00% of 00:00:02 core-walltime
-Memory Utilized: 288.00 KB
+Memory Utilized: 180.00 KB
 Memory Efficiency: 0.01% of 2.00 GB

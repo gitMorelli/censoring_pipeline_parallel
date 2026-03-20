@@ -7,6 +7,7 @@
 #SBATCH --time=00:02:00               
 #SBATCH --partition=shortq
 #SBATCH --output=analyze_ref.log
+#SBATCH --error=analyze_ref.err
 
 # Set SLURM_ARRAY_COUNT manually if not provided by your version of Slurm
 

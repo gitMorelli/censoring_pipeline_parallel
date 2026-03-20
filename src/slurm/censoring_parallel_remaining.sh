@@ -2,9 +2,9 @@
 #SBATCH --job-name=censoring_parallel_q13_remaining
 #SBATCH --nodes=1                     # 1 Node per array task
 #SBATCH --ntasks=1                    # Run a single task
-#SBATCH --cpus-per-task=2          # Use 2xnum_workers+2 CPUs per node
-#SBATCH --mem=8G                     # Request enough RAM for 16 parallel processes
-#SBATCH --time=00:05:00               # Estimated time for 500 images
+#SBATCH --cpus-per-task=8          # Use 2xnum_workers+2 CPUs per node
+#SBATCH --mem=24G                     # Request enough RAM for 16 parallel processes
+#SBATCH --time=00:15:00               # Estimated time for 500 images
 #SBATCH --partition=shortq
 #SBATCH --output=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf_backup/job_%A.out
 #SBATCH --error=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf_backup/job_%A.err
@@ -27,4 +27,4 @@ cd $PROJECT_ROOT
 
 # 2. Run using the -m flag (No .py extension, use dots for path)
 $ENV_PYTHON -m src.scripts.censoring_parallel \
-    --n_workers 1
+    --n_workers 6

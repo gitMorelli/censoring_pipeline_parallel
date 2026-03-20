@@ -7,7 +7,7 @@ from datetime import datetime
 QUESTIONNAIRE="13"
 def main():
     args = parse_args()
-    main_path = "/mnt/beegfs01/scratch/a_morelli/parallel_censoring/run_data_q13/ref_pdf"
+    main_path = "/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf"
     file_path = os.path.join(main_path, f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
     
     
@@ -19,7 +19,11 @@ def main():
     #get the number of ids that start with ab 
     pattern="A0A"
     count_ab = sum(id.startswith(pattern) for id in unique_ids)
-    print(f"Number of unique ids that start with {pattern}: {count_ab} out of {len(unique_ids)} total unique ids")
+    count_0b = sum(id.startswith("A0B") for id in unique_ids)
+    count_oc = sum(id.startswith("A0C") for id in unique_ids)
+    print(count_ab, "ids start with", pattern)
+    print(count_0b, "ids start with 0B")
+    print(count_oc, "ids start with 0C")
     
 
 def analysis(df):

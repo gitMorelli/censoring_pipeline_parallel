@@ -30,7 +30,7 @@ from src.utils.matching_utils import perform_phash_matching, perform_ocr_matchin
 
 
 
-def save_as_is_no_censoring(logger,image_time_logger,img_id,page_dictionary,dest_folder,n_page):
+def save_as_is_no_censoring(logger,image_time_logger,img_id,page_dictionary,dest_folder,n_page,**kwargs):
     page=page_dictionary[img_id]
     img_name = page['img_name']
     img_size = page['img_size']
@@ -44,8 +44,12 @@ def save_as_is_no_censoring(logger,image_time_logger,img_id,page_dictionary,dest
     create_folder(dest_folder, parents=True, exist_ok=True)
     save_path=os.path.join(dest_folder, f"page_{n_page}.png")
 
+    compression_level = kwargs.get('compression_level', None)  # Default to maximum compression if not provided
     if img is not None:
-        cv2.imwrite(save_path, img)
+        if compression_level:
+            cv2.imwrite(save_path, img,[cv2.IMWRITE_PNG_COMPRESSION, compression_level])
+        else:
+            cv2.imwrite(save_path, img)
     else:
         shutil.copy2(png_img_path, save_path)  # copy2 preserves metadata
     image_time_logger.call_end('copy_image')
@@ -165,7 +169,11 @@ def save_censored_image(img, censor_boxes, save_path,n_page,warning='00', verbos
     save_path=os.path.join(save_path, f"censored_page_w{warning}_{n_page}.png")
     censored_img = censor_image(img, censor_boxes, verbose=verbose,partial_coverage=partial_coverage,logger=logger,**kwargs)
     logger and logger.call_start(f'writing_to_memory')
-    cv2.imwrite(str(save_path), censored_img)
+    compression_level = kwargs.get('compression_level', None)  # Default to maximum compression if not provided
+    if compression_level:
+        cv2.imwrite(str(save_path), img,[cv2.IMWRITE_PNG_COMPRESSION, compression_level])
+    else:
+        cv2.imwrite(str(save_path), img)
     logger and logger.call_end(f'writing_to_memory')
 
 def generate_warning_string(decision_1,decision_2,test_log,img_id):

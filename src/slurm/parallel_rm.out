@@ -1,0 +1,25 @@
+Inizio eliminazione di: /mnt/beegfs01/scratch/a_morelli/parallel_censoring/censored_images/13
+Completato: /mnt/beegfs01/scratch/a_morelli/parallel_censoring/censored_images/13
+Inizio eliminazione di: /mnt/beegfs01/scratch/a_morelli/parallel_censoring/censored_images/archived_13
+Completato: /mnt/beegfs01/scratch/a_morelli/parallel_censoring/censored_images/archived_13
+Inizio eliminazione di: /mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf_backup
+Completato: /mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf_backup
+Inizio eliminazione di: /mnt/beegfs01/scratch/a_morelli/parallel_censoring/run_data_q13
+Completato: /mnt/beegfs01/scratch/a_morelli/parallel_censoring/run_data_q13
+
+----------------------------------------------
+|                SLURM EPILOG                |
+----------------------------------------------
+Job ID: 3667084
+Cluster: flamingo
+User/Group: a_morelli/gs_hpc_u1018
+Nodelist: n20
+Nodes: 1
+Cores per node: 16
+Job started at: 2026-03-20 16:24:47
+Job ended at:   2026-03-20 17:49:45
+Job Wall-clock time: 01:24:58
+CPU Utilized: 00:53:11
+CPU Efficiency: 3.91% of 22:39:28 core-walltime
+Memory Utilized: 62.53 MB
+Memory Efficiency: 1.53% of 4.00 GB

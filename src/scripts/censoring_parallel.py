@@ -80,7 +80,8 @@ template_images_path = "/home/a_morelli/temporary_data/test_parallel_censoring/t
 #TOTAL_TASKS = 100  # Total items to process
 
 # other variables
-QUESTIONNAIRE = "13"
+PNG_COMPRESSION_LEVEL = 6 #for png compression when saving debug images
+QUESTIONNAIRE = "12"
 ID_COL = 'e3n_id_hand'
 FILENAME_COL = 'object_name'
 #SAVE_ANNOTATED_TEMPLATES=True
@@ -1490,7 +1491,8 @@ def process_subject(unique_id, group, shared_resources):
         #### DEAL WITH PAGES NOT TO CENSOR (and special questionnairres?) ###### 
         if template['type']=='N':
             file_logger.write(f"Page {img_id} considered as N, no censoring applied, saved as is")
-            save_as_is_no_censoring(file_logger,questionnaire_time_logger,img_id,page_dictionary,dest_folder=results_for_id_save_path,n_page=matched_id)
+            save_as_is_no_censoring(file_logger,questionnaire_time_logger,img_id,page_dictionary,dest_folder=results_for_id_save_path,n_page=matched_id,
+                                    compression_level=PNG_COMPRESSION_LEVEL)
             test_log[img_id]['not_to_censor_ignored'] = True
             questionnaire_time_logger.write(f"Page {matched_id} considered as N, no censoring applied, saved as is")
             dtime = questionnaire_time_logger.call_end('total_time_page')
@@ -1569,7 +1571,7 @@ def process_subject(unique_id, group, shared_resources):
             save_censored_image(img, censor_boxes, results_for_id_save_path,matched_id,
                                 warning='',partial_coverage=partial_coverage,
                                 thickness_pct=THICKNESS_PCT, spacing_mult=SPACING_MULT,logger=questionnaire_time_logger,
-                                page_w=img_size[0],page_frac=PAGE_FRAC,area_frac=AREA_FRAC)   
+                                page_w=img_size[0],page_frac=PAGE_FRAC,area_frac=AREA_FRAC, compression_level=PNG_COMPRESSION_LEVEL)   
             save_partial_regions_to_csv(censor_boxes,partial_coverage, matched_id, partial_boxes_coords_path)
             questionnaire_time_logger.write(f"Page {matched_id} considered as N, no censoring applied, saved as is")
             dtime=questionnaire_time_logger.call_end('total_time_page')
@@ -1609,7 +1611,8 @@ def process_subject(unique_id, group, shared_resources):
         test_log = censor_the_page(is_match, transformation, extra_transformation, censor_boxes, censor_close_boxes, partial_coverage, 
                 questionnaire_time_logger, save_debug_images, debug_path, 
                 unique_id, QUESTIONNAIRE, matched_id, img, results_for_id_save_path, test_log=test_log, warning_string='', debug_images_name=debug_images_name, 
-                page_w=img_size[0],page_frac=PAGE_FRAC,area_frac=AREA_FRAC, partial_boxes_coords_path = partial_boxes_coords_path) # i don't add warning strings to pages
+                page_w=img_size[0],page_frac=PAGE_FRAC,area_frac=AREA_FRAC, partial_boxes_coords_path = partial_boxes_coords_path,
+                compression_level=PNG_COMPRESSION_LEVEL) # i don't add warning strings to pages
         questionnaire_time_logger.call_end('censoring')
         questionnaire_time_logger.write(f"Page {matched_id} considered as N, no censoring applied, saved as is")
         dtime=questionnaire_time_logger.call_end('total_time_page')
@@ -2079,7 +2082,11 @@ def censor_the_page(is_match, transformation, extra_transformation, censor_boxes
         clipped_boxes=get_contained_censor_boxes(censor_close_boxes_orb, censor_boxes, partial_coverage)
         save_partial_regions_to_csv(clipped_boxes,[True for _ in clipped_boxes], matched_id, partial_boxes_coords_path)
         image_time_logger and image_time_logger.call_start(f'writing_to_memory')
-        cv2.imwrite(save_censored_images_path, censored_img)
+        compression_level = kwargs.get('compression_level', None)  # Default to maximum compression if not provided
+        if compression_level:
+            cv2.imwrite(save_censored_images_path, censored_img,[cv2.IMWRITE_PNG_COMPRESSION, compression_level])
+        else:
+            cv2.imwrite(save_censored_images_path, censored_img)
         image_time_logger and image_time_logger.call_end(f'writing_to_memory')
     else:
         test_log['censored_with_large_boxes']=True

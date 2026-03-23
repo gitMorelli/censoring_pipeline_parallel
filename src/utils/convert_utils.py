@@ -69,6 +69,16 @@ def save_as_is(pdf_path,i,out_path, return_image = False):
             # Decode the array into an OpenCV image (BGR format)
             #cv_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
             cv_img = cv2.imdecode(nparr, cv2.IMREAD_UNCHANGED)
+
+            # --- SILENT GRAYSCALE FALLBACK ---
+            if cv_img is None:
+                width = base_image.get("width", 100)
+                height = base_image.get("height", 100)
+                
+                # Creates a 2D array (height, width) with no color channels
+                # 255 is white, 0 is black
+                cv_img = np.full((height, width), 255, dtype=np.uint8)
+
             return cv_img
         else:
             out_path = out_path+f".{ext}"

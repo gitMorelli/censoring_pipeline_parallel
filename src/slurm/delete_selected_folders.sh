@@ -15,10 +15,10 @@ BASE_DIR="/mnt/beegfs01/scratch/a_morelli/parallel_censoring"
 
 # Definiamo solo i nomi delle cartelle relative alla BASE_DIR
 TARGETS=(
-    "$BASE_DIR/ref_pdf_backup" #i cancel these before so that i can proceed with the next extraction in parallel
-    "$BASE_DIR/run_data_q13"
-    "$BASE_DIR/censored_images/13"
-    "$BASE_DIR/censored_images/archived_13"
+    #"$BASE_DIR/ref_pdf_backup" #i cancel these before so that i can proceed with the next extraction in parallel
+    #"$BASE_DIR/run_data_q13"
+    "$BASE_DIR/censored_images/12"
+    "$BASE_DIR/censored_images/archived_12"
 )
 
 module load parallel/20250222

@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=censoring_parallel_q13
-#SBATCH --array=0-99%20              # Divide IDs into chunks; limit the number of parallel arrays to 20
+#SBATCH --array=0-19              # Divide IDs into chunks; limit the number of parallel arrays to 20
 #SBATCH --nodes=1                     # 1 Node per array task
 #SBATCH --cpus-per-task=16           # Use 2xnum_workers+2 CPUs per node
 #SBATCH --mem=48G                     # Request enough RAM for 16 parallel processes
@@ -10,7 +10,7 @@
 #SBATCH --error=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/logs/slurm/job_%A_%a.err
 
 # Set SLURM_ARRAY_COUNT manually if not provided by your version of Slurm
-export SLURM_ARRAY_COUNT=100
+export SLURM_ARRAY_COUNT=20
 
 # 1. Load necessary modules (this varies by cluster)
 # module load python/3.10

@@ -1,13 +1,13 @@
 #!/bin/bash
-#SBATCH --job-name=censoring_parallel_q13_remaining
+#SBATCH --job-name=archiving_parallel
 #SBATCH --nodes=1                     # 1 Node per array task
-#SBATCH --ntasks=1                    # Run a single task
-#SBATCH --cpus-per-task=8          # Use 2xnum_workers+2 CPUs per node
-#SBATCH --mem=24G                     # Request enough RAM for 16 parallel processes
-#SBATCH --time=00:15:00               # Estimated time for 500 images
+#SBATCH --array=0-19 
+#SBATCH --cpus-per-task=14          # Use 2xnum_workers+2 CPUs per node
+#SBATCH --mem=2G                     # Request enough RAM for 16 parallel processes
+#SBATCH --time=00:45:00               # Estimated time for 500 images
 #SBATCH --partition=shortq
-#SBATCH --output=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf_backup/job_%A.out
-#SBATCH --error=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf_backup/job_%A.err
+#SBATCH --output=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/logs/slurm/job_%x_%j_%a.out
+#SBATCH --error=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/logs/slurm/job_%x_%j_%a.err
 
 # 1. Load necessary modules (this varies by cluster)
 # module load python/3.10
@@ -26,5 +26,5 @@ export KMP_DUPLICATE_LIB_OK=TRUE
 cd $PROJECT_ROOT
 
 # 2. Run using the -m flag (No .py extension, use dots for path)
-$ENV_PYTHON -m src.scripts.censoring_parallel \
-    --n_workers 1
+$ENV_PYTHON -m src.scripts.archive_parallel_python \
+    --n_workers 12

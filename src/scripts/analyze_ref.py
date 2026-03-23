@@ -4,17 +4,18 @@ import os
 from pathlib import Path
 from datetime import datetime
 
-QUESTIONNAIRE="13"
+QUESTIONNAIRE="11"
 def main():
     args = parse_args()
-    main_path = "/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf"
-    file_path = os.path.join(main_path, f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
+    file_path = os.path.join("/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf", f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
+    #file_path = os.path.join("/mnt/beegfs01/scratch/a_morelli/parallel_censoring/csv_results_aggregated/", f"combined_success_ids.csv")
+    #file_path = os.path.join("/mnt/beegfs01/scratch/a_morelli/parallel_censoring/csv_results_aggregated/", f"failed_ids_20260323_153548.csv")
     
     
     df = pd.read_csv(file_path)
     #get the list of unique ids in the column "e3n_id_hand"
     unique_ids = df['e3n_id_hand'].unique()
-    #show the first 10 unique ids
+    '''#show the first 10 unique ids
     print("First 10 unique ids: ", unique_ids[:10])
     #get the number of ids that start with ab 
     pattern="A0A"
@@ -23,7 +24,18 @@ def main():
     count_oc = sum(id.startswith("A0C") for id in unique_ids)
     print(count_ab, "ids start with", pattern)
     print(count_0b, "ids start with 0B")
-    print(count_oc, "ids start with 0C")
+    print(count_oc, "ids start with 0C")'''
+    #filter the df lines for which df['status'] != 'success' and show them
+    '''df_failed = df[df['status'] != 'success']
+    print("Lines with status != 'success':")
+    columns = df_failed.columns
+    for index, row in df_failed.iterrows():
+        #print all the columns and values for this row
+        print(f"Row {index}:")
+        for col in columns:
+            print(f"  {col}: {row[col]}")
+        print("\n")'''
+    
     
 
 def analysis(df):

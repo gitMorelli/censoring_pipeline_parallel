@@ -6,6 +6,9 @@ import logging.handlers
 import os
 import time
 from threadpoolctl import threadpool_limits
+#import subprocess
+import tarfile
+import shutil
 os.environ["OMP_NUM_THREADS"] = "1" #numpy
 os.environ["MKL_NUM_THREADS"] = "1" #numpy
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
@@ -80,8 +83,9 @@ template_images_path = "/home/a_morelli/temporary_data/test_parallel_censoring/t
 #TOTAL_TASKS = 100  # Total items to process
 
 # other variables
+SAVE_ARCHIVED = True #if true all results from an id will be stored in a tar folder with the id name
 PNG_COMPRESSION_LEVEL = 6 #for png compression when saving debug images
-QUESTIONNAIRE = "12"
+QUESTIONNAIRE = "11"
 ID_COL = 'e3n_id_hand'
 FILENAME_COL = 'object_name'
 #SAVE_ANNOTATED_TEMPLATES=True
@@ -214,6 +218,7 @@ def main(test_size=-1,timeout_lim=120,test=False):
     #select only the lines with used=False
     df = df[df[USED_COL]==False] 
     print(f"Total number of unique ids to process: {df[ID_COL].nunique()}")
+    #return 0
 
     #load the annotation files (full paths and names)
     annotation_file_names, annotation_files = load_annotation_tree(file_logger, templates_path)
@@ -1622,7 +1627,14 @@ def process_subject(unique_id, group, shared_resources):
     group = update_warning_cols(group,unique_id,test_log,pages_to_consider,id_col=ID_COL,ordering_warning_col=WARNING_ORDERING_COL_NAME,
                                 censoring_warning_col=WARNING_CENSORING_COL_NAME)
     
-    
+    if SAVE_ARCHIVED:
+        archive_result = archive_one(results_for_id_save_path, overwrite=True)
+        #debug archiviation failures by returning the output of the archive function
+        # 4. Summary for this specific node
+        archive_flag = False if archive_result.startswith("DONE") else True 
+        if archive_flag:
+            raise Exception(f"Archiving failed for ID {unique_id}: {archive_result}")
+
     # Save a partial CSV for THIS chunk
     '''chunk_id = os.environ.get('SLURM_ARRAY_TASK_ID')
     output_csv = os.path.join(updated_csv_paths,partial_results_name,f"partial_results_{chunk_id}.csv")
@@ -1631,6 +1643,53 @@ def process_subject(unique_id, group, shared_resources):
     total_time=questionnaire_time_logger.call_end('complete_process')
 
     return group.copy()
+
+
+def archive_one(file_path, overwrite=True):
+    """ 
+    Archives a folder and replaces the original folder with the .tar file 
+    in the same directory. 
+    """
+    folder_name = os.path.basename(file_path)
+    src_root = os.path.dirname(file_path)
+
+    folder_name = str(folder_name).strip()
+    if not folder_name or folder_name == 'nan':
+        return "ERROR: Empty ID"
+    
+    # Pathing: everything happens within src_root
+    src_path = os.path.join(src_root, folder_name)
+    final_tar = os.path.join(src_root, f"{folder_name}.tar")
+    temp_tar = os.path.join(src_root, f"{folder_name}.tar.tmp")
+
+    # 1. Validation & Skip Logic
+    if os.path.exists(final_tar) and not overwrite:
+        return f"SKIP: Archive already exists for {folder_name}"
+
+    if not os.path.isdir(src_path):
+        return f"ERROR: Source {folder_name} not found"
+
+    try:
+        # 2. Create the archive as a temporary file first
+        with tarfile.open(temp_tar, "w") as tar:
+            tar.add(src_path, arcname=folder_name)
+        
+        # 3. Substitution Logic (The "Swap")
+        # First, remove the original directory
+        shutil.rmtree(src_path)
+        
+        # Then, rename the temp archive to the final name
+        os.rename(temp_tar, final_tar)
+        
+        return f"DONE: {folder_name} replaced by archive"
+
+    except Exception as e:
+        # Cleanup: if archiving failed, remove the partial temp file
+        # Note: shutil.rmtree hasn't been called yet if we hit this, 
+        # so the original data remains safe.
+        if os.path.exists(temp_tar):
+            os.remove(temp_tar)
+        return f"FAILED: {folder_name} -> {str(e)}"
 
 ########## INDIVIDUAL FUNCTIONS #################
 

@@ -1,24 +1,29 @@
-First 10 unique ids:  <StringArray>
-['A0A0D6X7', 'A0A0F4U8', 'A0A0K5N8', 'A0A0N5F6', 'A0A0P0P8', 'A0A0U4X1',
- 'A0A0Z0Y6', 'A0A1B1H5', 'A0A1D8V5', 'A0A1E3A1']
-Length: 10, dtype: str
-69 ids start with A0A
-48 ids start with 0B
-61 ids start with 0C
+Lines with status != 'success':
+Row 0:
+  e3n_id_hand: I6L7V9S1
+  object_name: Q11_02289_QUEST_26
+  Used: False
+  Warning_ordering: nan
+  Warning_censoring: nan
+  time: nan
+  status: failed
+  error: {'type': 'AttributeError', 'message': "'NoneType' object has no attribute 'copy'", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 873, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1391, in process_subject\n    page_dictionary,template_dictionary = initialize_sorting_dictionaries(list_of_images, root, input_from_file=False)\n                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/utils/matching_utils.py", line 421, in initialize_sorting_dictionaries\n    page_dictionary = initialize_page_dictionary(sorted_files,input_from_file=input_from_file)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/utils/matching_utils.py", line 366, in initialize_page_dictionary\n    page_dictionary[img_id][\'img\']=file.copy() #the images are already loaded, i put them in the dictionary\n                                  ^^^^^^^^^\nAttributeError: \'NoneType\' object has no attribute \'copy\'\n'}
+
+
 
 ----------------------------------------------
 |                SLURM EPILOG                |
 ----------------------------------------------
-Job ID: 3664417
+Job ID: 3676311
 Cluster: flamingo
-User/Group: a_morelli/gs_hpc_u1018
-Nodelist: n23
+User/Group: a_morelli/root
+Nodelist: n01
 Nodes: 1
 Cores per node: 2
-Job started at: 2026-03-20 10:41:52
-Job ended at:   2026-03-20 10:41:53
+Job started at: 2026-03-23 15:49:49
+Job ended at:   2026-03-23 15:49:50
 Job Wall-clock time: 00:00:01
 CPU Utilized: 00:00:01
 CPU Efficiency: 50.00% of 00:00:02 core-walltime
-Memory Utilized: 180.00 KB
-Memory Efficiency: 0.01% of 2.00 GB
+Memory Utilized: 23.41 MB
+Memory Efficiency: 1.14% of 2.00 GB

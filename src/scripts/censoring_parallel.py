@@ -62,9 +62,11 @@ from src.utils.logging import FileWriter, initialize_logger
 logger = logging.getLogger(__name__)'''
 
 PDF_LOAD_PATH= "/mnt/beegfs01/scratch/a_morelli/datasets/pdfs"#"/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization" 
+#PDF_LOAD_PATH= "/home/a_morelli/datasets/pdfs"
 CSV_LOAD_PATH= "/mnt/beegfs01/scratch/a_morelli/datasets/pdfs/ref_pdf_Qx" #"/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization/ref_pdf"# "//smb-recherche-s1.prod-powerscale.intra.igr.fr/E34N_HANDWRITING$\\ref_pdf_Qx"#additional"#100263_template"
 TEMPLATES_PATH="/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization/current_template" #"//vms-e34n-databr/2025-handwriting\\data\\annotations\current_template"#additional"#100263_template"
-SAVE_PATH= "/mnt/beegfs01/scratch/a_morelli/parallel_censoring" #"/mnt/beegfs01/scratch/a_morelli/test_parallel_censoring" #"//vms-e34n-databr/2025-handwriting\\data\\test_censoring_pipeline"#additional"#100263_template" 
+#SAVE_PATH= "/mnt/beegfs01/scratch/a_morelli/parallel_censoring" #"/mnt/beegfs01/scratch/a_morelli/test_parallel_censoring" #"//vms-e34n-databr/2025-handwriting\\data\\test_censoring_pipeline"#additional"#100263_template" 
+SAVE_PATH= "/home/a_morelli/datasets/censored_pdfs"
 
 #names for debug subfolders
 debug_images_name='debug_images\\'
@@ -85,7 +87,7 @@ template_images_path = "/home/a_morelli/temporary_data/test_parallel_censoring/t
 # other variables
 SAVE_ARCHIVED = True #if true all results from an id will be stored in a tar folder with the id name
 PNG_COMPRESSION_LEVEL = 6 #for png compression when saving debug images
-QUESTIONNAIRE = "11"
+QUESTIONNAIRE = "8"
 ID_COL = 'e3n_id_hand'
 FILENAME_COL = 'object_name'
 #SAVE_ANNOTATED_TEMPLATES=True
@@ -177,7 +179,7 @@ def main(test_size=-1,timeout_lim=120,test=False):
     #load path for the pdfs
     questionnairres_log_path=os.path.join(pdf_load_path, f"Q{QUESTIONNAIRE}")
     #saving the censored images here
-    censored_images_path = os.path.join(save_path,'censored_images')
+    censored_images_path = save_path #os.path.join(save_path,'censored_images')
 
 
     ####### CLEANING FOLDERS (only in debugging) ###########
@@ -1626,14 +1628,6 @@ def process_subject(unique_id, group, shared_resources):
     save_warning_log(test_log, results_for_id_save_path)
     group = update_warning_cols(group,unique_id,test_log,pages_to_consider,id_col=ID_COL,ordering_warning_col=WARNING_ORDERING_COL_NAME,
                                 censoring_warning_col=WARNING_CENSORING_COL_NAME)
-    
-    if SAVE_ARCHIVED:
-        archive_result = archive_one(results_for_id_save_path, overwrite=True)
-        #debug archiviation failures by returning the output of the archive function
-        # 4. Summary for this specific node
-        archive_flag = False if archive_result.startswith("DONE") else True 
-        if archive_flag:
-            raise Exception(f"Archiving failed for ID {unique_id}: {archive_result}")
 
     # Save a partial CSV for THIS chunk
     '''chunk_id = os.environ.get('SLURM_ARRAY_TASK_ID')
@@ -1641,6 +1635,12 @@ def process_subject(unique_id, group, shared_resources):
     create_folder(os.path.dirname(output_csv), parents=True, exist_ok=True)
     group.to_csv(output_csv)'''
     total_time=questionnaire_time_logger.call_end('complete_process')
+
+    if SAVE_ARCHIVED:
+        archive_result = archive_one(results_for_id_save_path, overwrite=True)
+        #debug archiviation failures by returning the output of the archive function
+        # 4. Summary for this specific node
+        # archive_flag = False if archive_result.startswith("DONE") else True
 
     return group.copy()
 
@@ -2434,7 +2434,7 @@ def parse_args():
     return parser.parse_args()
 
 if __name__ == "__main__":
-    main(test_size=-1,timeout_lim=180,test=False)
+    main(test_size=-1,timeout_lim=220,test=False)
     #multi_threading_test()
     #multi_node_test(90)
     # A huge matrix multiplication that takes ~5-10 seconds

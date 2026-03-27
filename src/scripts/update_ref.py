@@ -4,10 +4,11 @@ import os
 from pathlib import Path
 from datetime import datetime
 
-QUESTIONNAIRE="11"
+QUESTIONNAIRE="8"
 def main():
     args = parse_args()
-    main_path = "/mnt/beegfs01/scratch/a_morelli/parallel_censoring"
+    #main_path = "/mnt/beegfs01/scratch/a_morelli/parallel_censoring"
+    main_path = "/home/a_morelli/datasets/censored_pdfs"
     store_folder = os.path.join(main_path, "csv_results_aggregated")
     ref_path = os.path.join(main_path, "ref_pdf")
 

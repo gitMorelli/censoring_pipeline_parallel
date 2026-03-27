@@ -1,0 +1,18 @@
+Total number of unique ids to process: 2460
+
+----------------------------------------------
+|                SLURM EPILOG                |
+----------------------------------------------
+Job ID: 3705273
+Cluster: flamingo
+User/Group: a_morelli/gs_hpc_u1018
+Nodelist: n20
+Nodes: 1
+Cores per node: 4
+Job started at: 2026-03-26 11:25:27
+Job ended at:   2026-03-26 11:25:32
+Job Wall-clock time: 00:00:05
+CPU Utilized: 00:00:02
+CPU Efficiency: 10.00% of 00:00:20 core-walltime
+Memory Utilized: 12.08 MB
+Memory Efficiency: 0.15% of 8.00 GB

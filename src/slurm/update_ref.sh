@@ -6,8 +6,8 @@
 #SBATCH --mem=2G                     
 #SBATCH --time=00:02:00               
 #SBATCH --partition=shortq
-#SBATCH --output=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf_backup/job_%A.out
-#SBATCH --error=/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf_backup/job_%A.err
+#SBATCH --output=/home/a_morelli/datasets/censored_pdfs/ref_pdf_backup/job_%A.out
+#SBATCH --error=/home/a_morelli/datasets/censored_pdfs/ref_pdf_backup/job_%A.err
 
 # Set SLURM_ARRAY_COUNT manually if not provided by your version of Slurm
 

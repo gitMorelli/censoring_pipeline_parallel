@@ -4,12 +4,12 @@ import os
 from pathlib import Path
 from datetime import datetime
 
-QUESTIONNAIRE="11"
+QUESTIONNAIRE="8"
 def main():
     args = parse_args()
-    file_path = os.path.join("/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf", f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
+    #file_path = os.path.join("/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf", f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
     #file_path = os.path.join("/mnt/beegfs01/scratch/a_morelli/parallel_censoring/csv_results_aggregated/", f"combined_success_ids.csv")
-    #file_path = os.path.join("/mnt/beegfs01/scratch/a_morelli/parallel_censoring/csv_results_aggregated/", f"failed_ids_20260323_153548.csv")
+    file_path = os.path.join("/home/a_morelli/datasets/censored_pdfs/csv_results_aggregated/", f"failed_ids_20260327_121049.csv")
     
     
     df = pd.read_csv(file_path)
@@ -26,7 +26,7 @@ def main():
     print(count_0b, "ids start with 0B")
     print(count_oc, "ids start with 0C")'''
     #filter the df lines for which df['status'] != 'success' and show them
-    '''df_failed = df[df['status'] != 'success']
+    df_failed = df[df['status'] == 'failed']
     print("Lines with status != 'success':")
     columns = df_failed.columns
     for index, row in df_failed.iterrows():
@@ -34,7 +34,7 @@ def main():
         print(f"Row {index}:")
         for col in columns:
             print(f"  {col}: {row[col]}")
-        print("\n")'''
+        print("\n")
     
     
 

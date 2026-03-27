@@ -171,9 +171,9 @@ def save_censored_image(img, censor_boxes, save_path,n_page,warning='00', verbos
     logger and logger.call_start(f'writing_to_memory')
     compression_level = kwargs.get('compression_level', None)  # Default to maximum compression if not provided
     if compression_level:
-        cv2.imwrite(str(save_path), img,[cv2.IMWRITE_PNG_COMPRESSION, compression_level])
+        cv2.imwrite(str(save_path), censored_img,[cv2.IMWRITE_PNG_COMPRESSION, compression_level])
     else:
-        cv2.imwrite(str(save_path), img)
+        cv2.imwrite(str(save_path), censored_img)
     logger and logger.call_end(f'writing_to_memory')
 
 def generate_warning_string(decision_1,decision_2,test_log,img_id):

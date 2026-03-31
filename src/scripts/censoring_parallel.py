@@ -61,8 +61,8 @@ from src.utils.logging import FileWriter, initialize_logger
 )
 logger = logging.getLogger(__name__)'''
 
-PDF_LOAD_PATH= "/mnt/beegfs01/scratch/a_morelli/datasets/pdfs"#"/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization" 
-#PDF_LOAD_PATH= "/home/a_morelli/datasets/pdfs"
+#PDF_LOAD_PATH= "/mnt/beegfs01/scratch/a_morelli/datasets/pdfs"#"/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization" 
+PDF_LOAD_PATH= "/home/a_morelli/datasets/pdfs"
 CSV_LOAD_PATH= "/mnt/beegfs01/scratch/a_morelli/datasets/pdfs/ref_pdf_Qx" #"/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization/ref_pdf"# "//smb-recherche-s1.prod-powerscale.intra.igr.fr/E34N_HANDWRITING$\\ref_pdf_Qx"#additional"#100263_template"
 TEMPLATES_PATH="/home/a_morelli/temporary_data/test_parallel_censoring/test_parallelization/current_template" #"//vms-e34n-databr/2025-handwriting\\data\\annotations\current_template"#additional"#100263_template"
 #SAVE_PATH= "/mnt/beegfs01/scratch/a_morelli/parallel_censoring" #"/mnt/beegfs01/scratch/a_morelli/test_parallel_censoring" #"//vms-e34n-databr/2025-handwriting\\data\\test_censoring_pipeline"#additional"#100263_template" 
@@ -87,7 +87,7 @@ template_images_path = "/home/a_morelli/temporary_data/test_parallel_censoring/t
 # other variables
 SAVE_ARCHIVED = True #if true all results from an id will be stored in a tar folder with the id name
 PNG_COMPRESSION_LEVEL = 6 #for png compression when saving debug images
-QUESTIONNAIRE = "8"
+QUESTIONNAIRE = "7"
 ID_COL = 'e3n_id_hand'
 FILENAME_COL = 'object_name'
 #SAVE_ANNOTATED_TEMPLATES=True
@@ -1457,11 +1457,16 @@ def process_subject(unique_id, group, shared_resources):
                                                     gap_threshold=GAP_THRESHOLD_OCR, max_dist=MAX_DIST_OCR)
             #update the test log with the ocr results
             for img_id in problematic_pages:
-                test_log[img_id]['matched_ocr'] = page_dictionary[img_id]['match_ocr']
-                test_log[img_id]['confidences_ocr'] = page_dictionary[img_id]['confidence_template']
-                #i give a warning if the match computed with ocr is  below the threshold
-                test_log[img_id]['warning_ocr'] = -1*test_log[img_id]['confidences_ocr']+1>MAX_DIST_OCR #i convert back to the cost for comparing with the threshold
-                #i give a warnign if the cost is over the maximum cost defined by the threshold
+                if page_dictionary[img_id]['match_ocr'] is not None:
+                    test_log[img_id]['matched_ocr'] = page_dictionary[img_id]['match_ocr']
+                    test_log[img_id]['confidences_ocr'] = page_dictionary[img_id]['confidence_template']
+                    #i give a warning if the match computed with ocr is  below the threshold
+                    test_log[img_id]['warning_ocr'] = -1*test_log[img_id]['confidences_ocr']+1>MAX_DIST_OCR #i convert back to the cost for comparing with the threshold
+                    #i give a warnign if the cost is over the maximum cost defined by the threshold
+                else: 
+                    test_log[img_id]['matched_ocr'] = None
+                    test_log[img_id]['confidences_ocr'] = 0
+                    test_log[img_id]['warning_ocr'] = True
             test_log['report_ocr'] = copy.deepcopy(report)
             debug_print_associations(pages_to_consider,page_dictionary,file_logger)
             questionnaire_time_logger.call_end("ocr_matching")

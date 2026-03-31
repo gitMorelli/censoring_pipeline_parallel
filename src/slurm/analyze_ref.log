@@ -1,128 +1,128 @@
 Lines with status != 'success':
 Row 0:
-  e3n_id_hand: B2F6Q1S4
-  object_name: Q8_57943_QUEST_1
+  e3n_id_hand: E0E6Z3F5
+  object_name: ISP0ITY8_ISP1BWWL
   Used: False
   Warning_ordering: nan
   Warning_censoring: nan
   time: nan
-  status: timeout
-  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+  status: failed
+  error: {'type': 'TypeError', 'message': "unsupported operand type(s) for *: 'int' and 'NoneType'", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 880, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1463, in process_subject\n    test_log[img_id][\'warning_ocr\'] = -1*test_log[img_id][\'confidences_ocr\']+1>MAX_DIST_OCR #i convert back to the cost for comparing with the threshold\n                                      ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nTypeError: unsupported operand type(s) for *: \'int\' and \'NoneType\'\n'}
 
 
 Row 1:
-  e3n_id_hand: B2G5S4I9
-  object_name: Q8_50655_QUEST_1
+  e3n_id_hand: E0E6Z3F5
+  object_name: ISP0ITY8_ISP1BWWN
   Used: False
   Warning_ordering: nan
   Warning_censoring: nan
   time: nan
-  status: timeout
-  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+  status: failed
+  error: {'type': 'TypeError', 'message': "unsupported operand type(s) for *: 'int' and 'NoneType'", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 880, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1463, in process_subject\n    test_log[img_id][\'warning_ocr\'] = -1*test_log[img_id][\'confidences_ocr\']+1>MAX_DIST_OCR #i convert back to the cost for comparing with the threshold\n                                      ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nTypeError: unsupported operand type(s) for *: \'int\' and \'NoneType\'\n'}
 
 
 Row 2:
-  e3n_id_hand: B2G9W0F8
-  object_name: Q8_44709_QUEST_1
+  e3n_id_hand: E0E6Z3F5
+  object_name: ISP0ITY8_ISP1BWWO
   Used: False
   Warning_ordering: nan
   Warning_censoring: nan
   time: nan
-  status: timeout
-  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+  status: failed
+  error: {'type': 'TypeError', 'message': "unsupported operand type(s) for *: 'int' and 'NoneType'", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 880, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1463, in process_subject\n    test_log[img_id][\'warning_ocr\'] = -1*test_log[img_id][\'confidences_ocr\']+1>MAX_DIST_OCR #i convert back to the cost for comparing with the threshold\n                                      ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nTypeError: unsupported operand type(s) for *: \'int\' and \'NoneType\'\n'}
 
 
 Row 3:
-  e3n_id_hand: B2H0B6L2
-  object_name: Q8_60992_QUEST_1
+  e3n_id_hand: E0E6Z3F5
+  object_name: ISP0ITY8_ISP1BWWM
   Used: False
   Warning_ordering: nan
   Warning_censoring: nan
   time: nan
-  status: timeout
-  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+  status: failed
+  error: {'type': 'TypeError', 'message': "unsupported operand type(s) for *: 'int' and 'NoneType'", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 880, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1463, in process_subject\n    test_log[img_id][\'warning_ocr\'] = -1*test_log[img_id][\'confidences_ocr\']+1>MAX_DIST_OCR #i convert back to the cost for comparing with the threshold\n                                      ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nTypeError: unsupported operand type(s) for *: \'int\' and \'NoneType\'\n'}
 
 
 Row 4:
-  e3n_id_hand: B2H8P5G3
-  object_name: Q8_70774_QUEST_1
+  e3n_id_hand: E0E6Z3F5
+  object_name: ISP0J3FY_ISP1C85N
   Used: False
   Warning_ordering: nan
   Warning_censoring: nan
   time: nan
-  status: timeout
-  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+  status: failed
+  error: {'type': 'TypeError', 'message': "unsupported operand type(s) for *: 'int' and 'NoneType'", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 880, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1463, in process_subject\n    test_log[img_id][\'warning_ocr\'] = -1*test_log[img_id][\'confidences_ocr\']+1>MAX_DIST_OCR #i convert back to the cost for comparing with the threshold\n                                      ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nTypeError: unsupported operand type(s) for *: \'int\' and \'NoneType\'\n'}
 
 
 Row 5:
-  e3n_id_hand: B2I3E6Z1
-  object_name: Q8_20531_QUEST_1
+  e3n_id_hand: E0F1M1R0
+  object_name: ISP0JERF_ISP1D75G
   Used: False
   Warning_ordering: nan
   Warning_censoring: nan
   time: nan
-  status: timeout
-  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+  status: failed
+  error: {'type': 'TypeError', 'message': "unsupported operand type(s) for *: 'int' and 'NoneType'", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 880, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1463, in process_subject\n    test_log[img_id][\'warning_ocr\'] = -1*test_log[img_id][\'confidences_ocr\']+1>MAX_DIST_OCR #i convert back to the cost for comparing with the threshold\n                                      ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nTypeError: unsupported operand type(s) for *: \'int\' and \'NoneType\'\n'}
 
 
 Row 6:
-  e3n_id_hand: B2I5A4A5
-  object_name: Q8_32877_QUEST_1
+  e3n_id_hand: E0F1M1R0
+  object_name: ISP0JEGY_ISP1D6CT
   Used: False
   Warning_ordering: nan
   Warning_censoring: nan
   time: nan
-  status: timeout
-  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+  status: failed
+  error: {'type': 'TypeError', 'message': "unsupported operand type(s) for *: 'int' and 'NoneType'", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 880, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1463, in process_subject\n    test_log[img_id][\'warning_ocr\'] = -1*test_log[img_id][\'confidences_ocr\']+1>MAX_DIST_OCR #i convert back to the cost for comparing with the threshold\n                                      ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nTypeError: unsupported operand type(s) for *: \'int\' and \'NoneType\'\n'}
 
 
 Row 7:
-  e3n_id_hand: B2J4O6C6
-  object_name: Q8_66313_QUEST_1
+  e3n_id_hand: E0F1M1R0
+  object_name: ISP0JEGY_ISP1D6CW
   Used: False
   Warning_ordering: nan
   Warning_censoring: nan
   time: nan
-  status: timeout
-  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+  status: failed
+  error: {'type': 'TypeError', 'message': "unsupported operand type(s) for *: 'int' and 'NoneType'", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 880, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1463, in process_subject\n    test_log[img_id][\'warning_ocr\'] = -1*test_log[img_id][\'confidences_ocr\']+1>MAX_DIST_OCR #i convert back to the cost for comparing with the threshold\n                                      ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nTypeError: unsupported operand type(s) for *: \'int\' and \'NoneType\'\n'}
 
 
 Row 8:
-  e3n_id_hand: B2J6C1E4
-  object_name: Q8_51642_QUEST_1
+  e3n_id_hand: E0F1M1R0
+  object_name: ISP0JEGY_ISP1D6CV
   Used: False
   Warning_ordering: nan
   Warning_censoring: nan
   time: nan
-  status: timeout
-  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+  status: failed
+  error: {'type': 'TypeError', 'message': "unsupported operand type(s) for *: 'int' and 'NoneType'", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 880, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1463, in process_subject\n    test_log[img_id][\'warning_ocr\'] = -1*test_log[img_id][\'confidences_ocr\']+1>MAX_DIST_OCR #i convert back to the cost for comparing with the threshold\n                                      ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nTypeError: unsupported operand type(s) for *: \'int\' and \'NoneType\'\n'}
 
 
 Row 9:
-  e3n_id_hand: B2K2M6T3
-  object_name: Q8_64299_QUEST_1
+  e3n_id_hand: E0F1M1R0
+  object_name: ISP0JEGY_ISP1D6CU
   Used: False
   Warning_ordering: nan
   Warning_censoring: nan
   time: nan
-  status: timeout
-  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+  status: failed
+  error: {'type': 'TypeError', 'message': "unsupported operand type(s) for *: 'int' and 'NoneType'", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 880, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1463, in process_subject\n    test_log[img_id][\'warning_ocr\'] = -1*test_log[img_id][\'confidences_ocr\']+1>MAX_DIST_OCR #i convert back to the cost for comparing with the threshold\n                                      ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nTypeError: unsupported operand type(s) for *: \'int\' and \'NoneType\'\n'}
 
 
 
 ----------------------------------------------
 |                SLURM EPILOG                |
 ----------------------------------------------
-Job ID: 3725166
+Job ID: 3762501
 Cluster: flamingo
-User/Group: a_morelli/root
-Nodelist: n02
+User/Group: a_morelli/gs_hpc_u1018
+Nodelist: n21
 Nodes: 1
 Cores per node: 2
-Job started at: 2026-03-27 12:33:20
-Job ended at:   2026-03-27 12:33:23
-Job Wall-clock time: 00:00:03
+Job started at: 2026-03-31 14:32:13
+Job ended at:   2026-03-31 14:32:15
+Job Wall-clock time: 00:00:02
 CPU Utilized: 00:00:01
-CPU Efficiency: 16.67% of 00:00:06 core-walltime
-Memory Utilized: 268.00 KB
-Memory Efficiency: 0.01% of 2.00 GB
+CPU Efficiency: 25.00% of 00:00:04 core-walltime
+Memory Utilized: 16.70 MB
+Memory Efficiency: 0.82% of 2.00 GB

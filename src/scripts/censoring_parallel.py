@@ -2434,7 +2434,7 @@ def parse_args():
     return parser.parse_args()
 
 if __name__ == "__main__":
-    main(test_size=-1,timeout_lim=220,test=False)
+    main(test_size=-1,timeout_lim=500,test=False)
     #multi_threading_test()
     #multi_node_test(90)
     # A huge matrix multiplication that takes ~5-10 seconds

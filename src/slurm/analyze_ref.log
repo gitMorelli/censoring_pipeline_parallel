@@ -1,40 +1,128 @@
 Lines with status != 'success':
-Row 334:
-  e3n_id_hand: C0Z2P2N4
-  object_name: Q8_28583_QUEST_1
+Row 0:
+  e3n_id_hand: B2F6Q1S4
+  object_name: Q8_57943_QUEST_1
   Used: False
   Warning_ordering: nan
   Warning_censoring: nan
   time: nan
-  status: failed
-  error: {'type': 'FileDataError', 'message': "Failed to open file '/mnt/beegfs01/scratch/a_morelli/datasets/pdfs/Q8/Q8_28583_QUEST_1.pdf'.", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/.conda/envs/CensoringEnv/lib/python3.12/site-packages/fitz/__init__.py", line 2739, in __init__\n    doc = mupdf.fz_open_document(filename)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/.conda/envs/CensoringEnv/lib/python3.12/site-packages/mupdf/__init__.py", line 44033, in fz_open_document\n    return _mupdf.fz_open_document(filename)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nmupdf.FzErrorFormat: code=7: no objects found\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 880, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1368, in process_subject\n    list_of_images, extraction_log = process_pdf_files(QUESTIONNAIRE,pdf_paths,None,save=False, test_log={})\n                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/utils/convert_utils.py", line 138, in process_pdf_files\n    n_pages=get_n_pages(pdf_file)\n            ^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/utils/convert_utils.py", line 50, in get_n_pages\n    with fitz.open(pdf_path) as doc:\n         ^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/.conda/envs/CensoringEnv/lib/python3.12/site-packages/fitz/__init__.py", line 2742, in __init__\n    raise FileDataError(f\'Failed to open file {filename!r}.\') from e\nfitz.FileDataError: Failed to open file \'/mnt/beegfs01/scratch/a_morelli/datasets/pdfs/Q8/Q8_28583_QUEST_1.pdf\'.\n'}
+  status: timeout
+  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
 
 
-Row 1679:
-  e3n_id_hand: E2H0A1J5
-  object_name: Q8_28584_QUEST_1
+Row 1:
+  e3n_id_hand: B2G5S4I9
+  object_name: Q8_50655_QUEST_1
   Used: False
   Warning_ordering: nan
   Warning_censoring: nan
   time: nan
-  status: failed
-  error: {'type': 'FileDataError', 'message': "Failed to open file '/mnt/beegfs01/scratch/a_morelli/datasets/pdfs/Q8/Q8_28584_QUEST_1.pdf'.", 'traceback': 'Traceback (most recent call last):\n  File "/home/a_morelli/.conda/envs/CensoringEnv/lib/python3.12/site-packages/fitz/__init__.py", line 2739, in __init__\n    doc = mupdf.fz_open_document(filename)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/.conda/envs/CensoringEnv/lib/python3.12/site-packages/mupdf/__init__.py", line 44033, in fz_open_document\n    return _mupdf.fz_open_document(filename)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nmupdf.FzErrorFormat: code=7: no objects found\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 880, in process_wrapper\n    result = process_subject(*task_tuple)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/scripts/censoring_parallel.py", line 1368, in process_subject\n    list_of_images, extraction_log = process_pdf_files(QUESTIONNAIRE,pdf_paths,None,save=False, test_log={})\n                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/utils/convert_utils.py", line 138, in process_pdf_files\n    n_pages=get_n_pages(pdf_file)\n            ^^^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/vscode_projects/censoring_pipeline_parallel/src/utils/convert_utils.py", line 50, in get_n_pages\n    with fitz.open(pdf_path) as doc:\n         ^^^^^^^^^^^^^^^^^^^\n  File "/home/a_morelli/.conda/envs/CensoringEnv/lib/python3.12/site-packages/fitz/__init__.py", line 2742, in __init__\n    raise FileDataError(f\'Failed to open file {filename!r}.\') from e\nfitz.FileDataError: Failed to open file \'/mnt/beegfs01/scratch/a_morelli/datasets/pdfs/Q8/Q8_28584_QUEST_1.pdf\'.\n'}
+  status: timeout
+  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+
+
+Row 2:
+  e3n_id_hand: B2G9W0F8
+  object_name: Q8_44709_QUEST_1
+  Used: False
+  Warning_ordering: nan
+  Warning_censoring: nan
+  time: nan
+  status: timeout
+  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+
+
+Row 3:
+  e3n_id_hand: B2H0B6L2
+  object_name: Q8_60992_QUEST_1
+  Used: False
+  Warning_ordering: nan
+  Warning_censoring: nan
+  time: nan
+  status: timeout
+  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+
+
+Row 4:
+  e3n_id_hand: B2H8P5G3
+  object_name: Q8_70774_QUEST_1
+  Used: False
+  Warning_ordering: nan
+  Warning_censoring: nan
+  time: nan
+  status: timeout
+  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+
+
+Row 5:
+  e3n_id_hand: B2I3E6Z1
+  object_name: Q8_20531_QUEST_1
+  Used: False
+  Warning_ordering: nan
+  Warning_censoring: nan
+  time: nan
+  status: timeout
+  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+
+
+Row 6:
+  e3n_id_hand: B2I5A4A5
+  object_name: Q8_32877_QUEST_1
+  Used: False
+  Warning_ordering: nan
+  Warning_censoring: nan
+  time: nan
+  status: timeout
+  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+
+
+Row 7:
+  e3n_id_hand: B2J4O6C6
+  object_name: Q8_66313_QUEST_1
+  Used: False
+  Warning_ordering: nan
+  Warning_censoring: nan
+  time: nan
+  status: timeout
+  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+
+
+Row 8:
+  e3n_id_hand: B2J6C1E4
+  object_name: Q8_51642_QUEST_1
+  Used: False
+  Warning_ordering: nan
+  Warning_censoring: nan
+  time: nan
+  status: timeout
+  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
+
+
+Row 9:
+  e3n_id_hand: B2K2M6T3
+  object_name: Q8_64299_QUEST_1
+  Used: False
+  Warning_ordering: nan
+  Warning_censoring: nan
+  time: nan
+  status: timeout
+  error: {'type': 'Timeout', 'message': 'Task exceeded allowed runtime', 'traceback': ''}
 
 
 
 ----------------------------------------------
 |                SLURM EPILOG                |
 ----------------------------------------------
-Job ID: 3725104
+Job ID: 3725166
 Cluster: flamingo
-User/Group: a_morelli/gs_hpc_u1018
+User/Group: a_morelli/root
 Nodelist: n02
 Nodes: 1
 Cores per node: 2
-Job started at: 2026-03-27 12:18:01
-Job ended at:   2026-03-27 12:18:04
+Job started at: 2026-03-27 12:33:20
+Job ended at:   2026-03-27 12:33:23
 Job Wall-clock time: 00:00:03
 CPU Utilized: 00:00:01
 CPU Efficiency: 16.67% of 00:00:06 core-walltime
-Memory Utilized: 576.00 KB
-Memory Efficiency: 0.03% of 2.00 GB
+Memory Utilized: 268.00 KB
+Memory Efficiency: 0.01% of 2.00 GB

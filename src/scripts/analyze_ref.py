@@ -26,15 +26,20 @@ def main():
     print(count_0b, "ids start with 0B")
     print(count_oc, "ids start with 0C")'''
     #filter the df lines for which df['status'] != 'success' and show them
-    df_failed = df[df['status'] == 'failed']
+    df_failed = df[df['status'] != 'success']
+    #df_failed = df[df['status'] != 'success']
     print("Lines with status != 'success':")
     columns = df_failed.columns
+    n_visualize=10
     for index, row in df_failed.iterrows():
         #print all the columns and values for this row
         print(f"Row {index}:")
         for col in columns:
             print(f"  {col}: {row[col]}")
         print("\n")
+        n_visualize -= 1
+        if n_visualize <= 0:
+            break
     
     
 

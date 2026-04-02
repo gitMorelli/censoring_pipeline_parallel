@@ -278,7 +278,7 @@ def match_pages_text(pages_list,templates_to_consider,similarity, compute_report
         matches.append({
             "page_index": pages_list[i],
             "template_index": templates_to_consider[j],
-            "similarity": int(-1*(cost[i, j]-1)), # i invert again the formula to get the similarity
+            "similarity": -1*(cost[i, j]-1), # i invert again the formula to get the similarity
         })
     
     if compute_report:

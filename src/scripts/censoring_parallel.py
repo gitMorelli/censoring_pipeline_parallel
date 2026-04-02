@@ -87,7 +87,7 @@ template_images_path = "/home/a_morelli/temporary_data/test_parallel_censoring/t
 # other variables
 SAVE_ARCHIVED = True #if true all results from an id will be stored in a tar folder with the id name
 PNG_COMPRESSION_LEVEL = 6 #for png compression when saving debug images
-QUESTIONNAIRE = "7"
+QUESTIONNAIRE = "5"
 ID_COL = 'e3n_id_hand'
 FILENAME_COL = 'object_name'
 #SAVE_ANNOTATED_TEMPLATES=True

@@ -3,7 +3,7 @@
 #SBATCH --nodes=1                     # 1 Node per array task
 #SBATCH --ntasks=1                    # Run a single task
 #SBATCH --cpus-per-task=4          # Use 2xnum_workers+2 CPUs per node
-#SBATCH --mem=72G                     # Request enough RAM for 16 parallel processes
+#SBATCH --mem=48G                     # Request enough RAM for 16 parallel processes
 #SBATCH --time=01:00:00               # Estimated time for 500 images
 #SBATCH --partition=shortq
 #SBATCH --output=parallel_remaining.out

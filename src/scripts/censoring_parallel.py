@@ -1539,7 +1539,9 @@ def process_subject(unique_id, group, shared_resources):
             save_these_boxes(output_path,img,[censor_boxes,adjusted_censor_boxes],list_of_colors=['red','green'])
         #i also rescale to thecorrect resolution (image scale instead of template scale)
         censor_boxes = rescale_box_coords_given_resolutions(censor_boxes, template['template_size'], img_size)
-        censor_boxes = adjust_boundary_boxes(censor_boxes, template['template_size'], img_size , epsilon=EPSILON_EDGE_MATCHING)
+        
+        #If you want to adjust the boxes to the boundaries (review the adjust_boundary_boxes, now is broken)
+        #censor_boxes = adjust_boundary_boxes(censor_boxes, template['template_size'], img_size , epsilon=EPSILON_EDGE_MATCHING)
         questionnaire_time_logger.call_end('adjust_censor_boxes_to_boundaries')
 
         #### RESCALE BOXES based on resolution of image and template ##########

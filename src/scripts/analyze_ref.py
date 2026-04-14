@@ -4,12 +4,12 @@ import os
 from pathlib import Path
 from datetime import datetime
 
-QUESTIONNAIRE="7"
+QUESTIONNAIRE="1"
 def main():
     args = parse_args()
     #file_path = os.path.join("/mnt/beegfs01/scratch/a_morelli/parallel_censoring/ref_pdf", f"updated_ref_pdf_Q{QUESTIONNAIRE}.csv")
     #file_path = os.path.join("/mnt/beegfs01/scratch/a_morelli/parallel_censoring/csv_results_aggregated/", f"combined_success_ids.csv")
-    file_path = os.path.join("/home/a_morelli/datasets/censored_pdfs/csv_results_aggregated/", f"failed_ids_20260331_142825.csv")
+    file_path = os.path.join("/home/a_morelli/datasets/censored_pdfs/csv_results_aggregated/", f"failed_ids_20260414_093322.csv")
     
     
     df = pd.read_csv(file_path)

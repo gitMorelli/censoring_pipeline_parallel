@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --job-name=censoring_parallel_q7
-#SBATCH --array=0-99%20              # Divide IDs into chunks; limit the number of parallel arrays to 20
+#SBATCH --job-name=censoring_parallel_q1
+#SBATCH --array=0-99%10              # Divide IDs into chunks; limit the number of parallel arrays to 20
 #SBATCH --nodes=1                     # 1 Node per array task
 #SBATCH --cpus-per-task=16          # Use 2xnum_workers+2 CPUs per node
-#SBATCH --mem=48G                     # Request enough RAM for 16 parallel processes
+#SBATCH --mem=32G                     # Request enough RAM for 16 parallel processes
 #SBATCH --time=01:00:00               # Estimated time for 500 images
 #SBATCH --partition=shortq
 #SBATCH --output=/home/a_morelli/datasets/censored_pdfs/logs/slurm/job_%A_%a.out

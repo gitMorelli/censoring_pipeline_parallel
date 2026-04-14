@@ -1,31 +1,35 @@
-Total number of unique ids to process: 10
+Total number of unique ids to process: 14
 pages in annotations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
-Total unique IDs after test size limit: 10
-Chunck of ids has length:  10
-Task 0: Processing 10 IDs using 4 CPUs
-Progress: 2/10 (20.0%)
-Progress: 3/10 (30.0%)
-Progress: 4/10 (40.0%)
-Progress: 5/10 (50.0%)
-Progress: 6/10 (60.0%)
-Progress: 7/10 (70.0%)
-Progress: 8/10 (80.0%)
-Progress: 9/10 (90.0%)
-Progress: 10/10 (100.0%)
+Total unique IDs after test size limit: 14
+Chunck of ids has length:  14
+Task 0: Processing 14 IDs using 4 CPUs
+Progress: 1/14 (7.1%)
+Progress: 2/14 (14.3%)
+Progress: 3/14 (21.4%)
+Progress: 4/14 (28.6%)
+Progress: 5/14 (35.7%)
+Progress: 6/14 (42.9%)
+Progress: 8/14 (57.1%)
+Progress: 9/14 (64.3%)
+Progress: 10/14 (71.4%)
+Progress: 11/14 (78.6%)
+Progress: 12/14 (85.7%)
+Progress: 13/14 (92.9%)
+Progress: 14/14 (100.0%)
 
 ----------------------------------------------
 |                SLURM EPILOG                |
 ----------------------------------------------
-Job ID: 3759204
+Job ID: 3810908
 Cluster: flamingo
 User/Group: a_morelli/gs_hpc_u1018
-Nodelist: n09
+Nodelist: n24
 Nodes: 1
 Cores per node: 4
-Job started at: 2026-03-31 10:33:27
-Job ended at:   2026-03-31 10:42:28
-Job Wall-clock time: 00:09:01
-CPU Utilized: 00:19:56
-CPU Efficiency: 55.27% of 00:36:04 core-walltime
+Job started at: 2026-04-04 15:26:31
+Job ended at:   2026-04-04 15:38:36
+Job Wall-clock time: 00:12:05
+CPU Utilized: 00:23:55
+CPU Efficiency: 49.48% of 00:48:20 core-walltime
 Memory Utilized: 1.31 GB
 Memory Efficiency: 1.82% of 72.00 GB

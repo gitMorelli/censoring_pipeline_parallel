@@ -87,7 +87,7 @@ template_images_path = "/home/a_morelli/temporary_data/test_parallel_censoring/t
 # other variables
 SAVE_ARCHIVED = True #if true all results from an id will be stored in a tar folder with the id name
 PNG_COMPRESSION_LEVEL = 6 #for png compression when saving debug images
-QUESTIONNAIRE = "5"
+QUESTIONNAIRE = "1"
 ID_COL = 'e3n_id_hand'
 FILENAME_COL = 'object_name'
 #SAVE_ANNOTATED_TEMPLATES=True
@@ -108,8 +108,8 @@ GAP_THRESHOLD_PHASH = 5
 MAX_DIST_PHASH = 18
 #ocr
 GAP_THRESHOLD_OCR = 0.1
-MAX_DIST_OCR = 0.2
-DISCARD_DIST_OCR = 0.7
+MAX_DIST_OCR = 0.3 #if the similiarity is below 0.7 (=1-0.3) then the ocr match is considered suspicious
+DISCARD_DIST_OCR = 0.7 #if the similiarity is below 0.3 (=1-0.7) then the ocr match is discarded and not considered at all 
 TEXT_SIMILARITY_METRIC = 'similarity_jaccard_tokens'
 #orb
 GAP_THRESHOLD_ORB = 5 # i shoudl modify this and the other value (i fixed to the same value as phash but makes no sense)
@@ -1830,7 +1830,7 @@ def select_template(pages_in_annotation,questionnaire,annotation_roots,npy_data,
                                                             template_dictionary,properties=['phash'])
             
             #perform phash matching
-            page_dictionary, report = perform_phash_matching(page_dictionary,template_dictionary, templates_to_consider, templates_to_consider, 
+            page_dictionary, report = perform_phash_matching(page_dictionary,template_dictionary, pages_to_consider, templates_to_consider, 
                             gap_threshold=GAP_THRESHOLD_PHASH,max_dist=MAX_DIST_PHASH, compute_report=True)
             total_cost = report['total_cost']
 
@@ -2439,7 +2439,7 @@ def parse_args():
     return parser.parse_args()
 
 if __name__ == "__main__":
-    main(test_size=-1,timeout_lim=500,test=False)
+    main(test_size=-1,timeout_lim=300,test=False)
     #multi_threading_test()
     #multi_node_test(90)
     # A huge matrix multiplication that takes ~5-10 seconds

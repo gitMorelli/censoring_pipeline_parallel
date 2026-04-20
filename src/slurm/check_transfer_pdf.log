@@ -328,16 +328,16 @@ Finished checking. Found 651093 out of 651093 files.
 ----------------------------------------------
 |                SLURM EPILOG                |
 ----------------------------------------------
-Job ID: 3851582
+Job ID: 3933454
 Cluster: flamingo
 User/Group: a_morelli/gs_hpc_u1018
-Nodelist: n02
+Nodelist: n01
 Nodes: 1
 Cores per node: 2
-Job started at: 2026-04-10 11:32:27
-Job ended at:   2026-04-10 11:33:23
-Job Wall-clock time: 00:00:56
-CPU Utilized: 00:00:14
-CPU Efficiency: 12.50% of 00:01:52 core-walltime
-Memory Utilized: 912.53 MB
-Memory Efficiency: 44.56% of 2.00 GB
+Job started at: 2026-04-17 10:03:59
+Job ended at:   2026-04-17 10:05:16
+Job Wall-clock time: 00:01:17
+CPU Utilized: 00:00:15
+CPU Efficiency: 9.74% of 00:02:34 core-walltime
+Memory Utilized: 912.11 MB
+Memory Efficiency: 44.54% of 2.00 GB

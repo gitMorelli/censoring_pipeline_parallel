@@ -87,7 +87,7 @@ template_images_path = "/home/a_morelli/temporary_data/test_parallel_censoring/t
 # other variables
 SAVE_ARCHIVED = True #if true all results from an id will be stored in a tar folder with the id name
 PNG_COMPRESSION_LEVEL = 6 #for png compression when saving debug images
-QUESTIONNAIRE = "1"
+QUESTIONNAIRE = "2"
 ID_COL = 'e3n_id_hand'
 FILENAME_COL = 'object_name'
 #SAVE_ANNOTATED_TEMPLATES=True
@@ -1542,6 +1542,7 @@ def process_subject(unique_id, group, shared_resources):
         
         #If you want to adjust the boxes to the boundaries (review the adjust_boundary_boxes, now is broken)
         #censor_boxes = adjust_boundary_boxes(censor_boxes, template['template_size'], img_size , epsilon=EPSILON_EDGE_MATCHING)
+        
         questionnaire_time_logger.call_end('adjust_censor_boxes_to_boundaries')
 
         #### RESCALE BOXES based on resolution of image and template ##########

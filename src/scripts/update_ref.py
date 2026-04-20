@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from datetime import datetime
 
-QUESTIONNAIRE="1"
+QUESTIONNAIRE="2"
 def main():
     args = parse_args()
     #main_path = "/mnt/beegfs01/scratch/a_morelli/parallel_censoring"

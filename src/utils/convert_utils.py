@@ -110,7 +110,7 @@ def process_pdf_files(n_quest,pdf_files,save_path, save=True, test_log = {}):
         "4":{"num_pages":4,"order": "reverse","stored_as":"multi-page"}, #casi: anche presente come singolo pdf con tutte le pagine in ordine inverso (inizia con Qx)
         "5":{"num_pages":4,"order": "reverse","stored_as":"multi-page"}, #casi: anche presente come singolo pdf con tutte le pagine in ordine inverso (inizia con Qx)
         "6":{"num_pages":4,"order": "alphabetical","stored_as":"multi-page"},# casi: pagine mancanti
-        "7":{"num_pages":4,"order": "alphabetical","stored_as":"multi-page"},# casi: pagine mancanti
+        "7":{"num_pages":5,"order": "alphabetical","stored_as":"multi-page"},# casi: pagine mancanti
         "8":{"num_pages":32,"order": "alphabetical","stored_as":"single"},# casi: pagine mancanti
         "9":{"num_pages":4,"order": "alphabetical","stored_as":"multi-page"},# casi: pagine mancanti
         "10":{"num_pages":12,"order": "alphabetical","stored_as":"single"},# sia un questionario di 2 pagine con adesione familiari sia uno di 12 (che comprende anche quelle 2)

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=censoring_parallel_q10
+#SBATCH --job-name=censoring_parallel_q7
 #SBATCH --array=0-99%5              # Divide IDs into chunks; limit the number of parallel arrays to 20
 #SBATCH --nodes=1                     # 1 Node per array task
 #SBATCH --cpus-per-task=16          # Use 2xnum_workers+2 CPUs per node

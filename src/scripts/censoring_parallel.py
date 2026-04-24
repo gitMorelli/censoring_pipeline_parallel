@@ -87,7 +87,7 @@ template_images_path = "/home/a_morelli/temporary_data/test_parallel_censoring/t
 # other variables
 SAVE_ARCHIVED = True #if true all results from an id will be stored in a tar folder with the id name
 PNG_COMPRESSION_LEVEL = 6 #for png compression when saving debug images
-QUESTIONNAIRE = "2"
+QUESTIONNAIRE = "7"
 ID_COL = 'e3n_id_hand'
 FILENAME_COL = 'object_name'
 #SAVE_ANNOTATED_TEMPLATES=True
@@ -1795,10 +1795,12 @@ def get_file_paths(filenames,pdf_load_path,logger):
 
 def select_specific_annotation_file(questionnaire):
     #i will select only one annotation file from the library
-    if questionnaire in [f"{i}" for i in range(2,14)]:
+    if questionnaire in ["2","3","4","5","6","7","9","10","11","12","13"]:
         selected_templates = [f"q_{questionnaire}"]
     elif questionnaire == "1":
         selected_templates = ["q_1","q_1v2"]
+    elif questionnaire == "8":
+        selected_templates = ["q_8","q_8v2"]
     return selected_templates
 
 def select_template(pages_in_annotation,questionnaire,annotation_roots,npy_data, list_of_images, logger):
@@ -1844,6 +1846,20 @@ def select_template(pages_in_annotation,questionnaire,annotation_roots,npy_data,
         logger.write(f"Selected template: {i} with total cost {max_cost}")
         
         return report,selected_template_index,selected_confidence,annotation_roots[selected_template_index],npy_data[selected_template_index]
+    elif questionnaire == "8":
+        # browse the list of images and get the h and w for each
+        count = 0
+        for img in list_of_images:
+            if img is not None:
+                h,w = img.shape
+                ratio = abs(w-h)/max(w,h)
+                if ratio<0.1: #if the image is almost square i select template q_8v2 otherwise q_8
+                    count+=1
+        if count>=1:
+            selected_template_index=1
+        else:
+            selected_template_index=0
+        return count,selected_template_index,None,annotation_roots[selected_template_index],npy_data[selected_template_index]
             
     else:
         return None,0, None, annotation_roots[0],npy_data[0]

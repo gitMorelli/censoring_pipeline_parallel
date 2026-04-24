@@ -237,7 +237,7 @@ def load_subjects_tree(logger, filled_path):
 def load_template_info(logger,annotation_files,annotation_file_names,annotation_path, 
                        security_check=True, selected_files = None):
     if selected_files == None:
-        selected_files = [f"q_{i}" for i in range(1,13)]+["q_1v2"]
+        selected_files = [f"q_{i}" for i in range(1,13)]+["q_1v2","q_8v2"]
     annotation_roots=[]
     path_npy=os.path.join(annotation_path,"precomputed_features")
     npy_files=list_files_with_extension(path_npy, "npy", recursive=False)
